@@ -44,6 +44,7 @@ public class Cart {
         Cart cart = new Cart();
         cart.setMember(member);
         cart.saveItem(cart, product, option, price, count);
+        option.removeStock(count);
         return cart;
     }
 
@@ -56,5 +57,17 @@ public class Cart {
 
     public void updateOption(Cart cart, ProductOption option){
         cart.setProductOption(option);
+    }
+
+    public void updateCount(Cart cart, int count){
+        ProductOption productOption = cart.getProductOption();
+        productOption.addStock(cart.getCount());
+        productOption.removeStock(count);
+        cart.setCount(count);
+        cart.setPrice(cart.getProduct().getPrice() * count);
+    }
+
+    public void cancel(){
+        getProductOption().addStock(getCount());
     }
 }

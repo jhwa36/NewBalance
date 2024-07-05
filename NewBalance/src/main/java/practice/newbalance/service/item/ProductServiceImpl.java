@@ -172,6 +172,10 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     @Override
     public void delCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+                () -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA)
+        );
+        cart.cancel();
         cartRepository.deleteById(cartId);
     }
 
@@ -179,6 +183,8 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     @Override
     public void delAllCart(Long memberId) {
+        List<Cart> findCarts = cartRepository.findByMemberId(memberId);
+        findCarts.stream().forEach(Cart::cancel);
         cartRepository.deleteByMemberId(memberId);
     }
 
@@ -212,8 +218,7 @@ public class ProductServiceImpl implements ProductService{
         Cart cart = cartRepository.findById(cartId).orElseThrow(
                 () -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA)
         );
-        cart.setCount(count);
-        cart.setPrice(cart.getProduct().getPrice() * count);
+        cart.updateCount(cart, count);
     }
 }
 
