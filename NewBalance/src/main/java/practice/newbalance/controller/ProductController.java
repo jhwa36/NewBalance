@@ -89,6 +89,41 @@ public class ProductController {
     }
 
     /**
+     * Product 수정
+     * @param productId
+     * @param productDto
+     * @return
+     */
+    @PutMapping("/products/updateProduct/{productId}")
+    public ResponseEntity<String> updateItem(
+            @PathVariable(value = "productId") Long productId,
+            @RequestBody ProductDto productDto) {
+        try {
+            productService.updateProduct(productId, productDto);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
+
+    /**
+     * Product Option 삭제
+     */
+    @PostMapping("/products/deleteOption")
+    public ResponseEntity<String> deleteProductOption(@RequestBody Map<String, Object> option){
+        String color = (String) option.get("color");
+        List<Integer> optionId = (List<Integer>) option.get("optionId");
+            productService.deleteByColorAndIdIn(color, optionId);
+            return ResponseEntity.ok("success");
+    }
+
+    @DeleteMapping("/products/deleteProduct/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("productId") Long productId){
+        productService.deleteByProductId(productId);
+        return ResponseEntity.ok("success");
+    }
+
+    /**
      * 상품 전체 조회
      * @return
      */

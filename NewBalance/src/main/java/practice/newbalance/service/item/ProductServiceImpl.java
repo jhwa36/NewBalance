@@ -19,6 +19,7 @@ import practice.newbalance.dto.item.ProductOptionDto;
 import practice.newbalance.dto.item.ProductOptionDtoDetails;
 import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CartRepository;
+import practice.newbalance.repository.item.ProductOptionRepository;
 import practice.newbalance.repository.item.ProductRepository;
 import practice.newbalance.repository.item.query.CustomProductRepository;
 
@@ -35,6 +36,7 @@ public class ProductServiceImpl implements ProductService{
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final CustomProductRepository customProductRepository;
+    private final ProductOptionRepository productOptionRepository;
 
     @Transactional
     @Override
@@ -131,6 +133,85 @@ public class ProductServiceImpl implements ProductService{
             }
         }
         return productRepository.save(product);
+    }
+    @Transactional
+    @Override
+    public Product updateProduct(Long productId, ProductDto productDto) {
+        // 기존 Product 불러오기
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
+
+        // ObjectMapper 초기화
+        ObjectMapper mapper = new ObjectMapper();
+        List<ProductOptionDto> productOptionDtoList = null;
+
+        try {
+            // ProductDto에서 Option 정보 읽어오기
+            productOptionDtoList = mapper.readValue(productDto.getOption(), new TypeReference<List<ProductOptionDto>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            // JSON 변환 오류 처리
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.UNKNOWN);
+        }
+
+        // 기존 Product 정보 업데이트
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setCode(productDto.getCode());
+        product.setContry(productDto.getContry());
+        product.setManufactureDate(productDto.getManufactureDate());
+        product.setMaterial(productDto.getMaterial());
+        product.setFeatures(productDto.getFeatures());
+        product.setCategory(productDto.getCategory());
+        product.setContent(productDto.getContent());
+        product.setImageUrls(productDto.getImageUrls());
+
+        // 기존 ProductOptions 삭제
+        product.getProductOptions().clear();
+
+        // 새로운 ProductOptions 추가 또는 업데이트
+        for (ProductOptionDto productOptionDto : productOptionDtoList) {
+            String color = productOptionDto.getColor();
+
+            for (ProductOptionDtoDetails productOptionDtoDetails : productOptionDto.getProductOptionDtoDetailsList()) {
+                Long optionId = productOptionDtoDetails.getId();
+                ProductOption productOption;
+
+                if (optionId != null) {
+                    // 기존 ProductOption 업데이트
+                    productOption = productOptionRepository.findById(optionId)
+                            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
+
+                    productOption.setColor(color);
+                    productOption.setSize(productOptionDtoDetails.getSizeValue());
+                    productOption.setQuantity(productOptionDtoDetails.getQuantity());
+                } else {
+                    // 새로운 ProductOption 추가
+                    productOption = new ProductOption();
+                    productOption.setColor(color);
+                    productOption.setSize(productOptionDtoDetails.getSizeValue());
+                    productOption.setQuantity(productOptionDtoDetails.getQuantity());
+                }
+
+                // Product에 ProductOption 추가
+                product.addOption(productOption);
+            }
+        }
+
+        // Product 저장 및 반환
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    @Override
+    public void deleteByColorAndIdIn(String color, List<Integer> optionId) {
+            productOptionRepository.deleteByColorAndIdIn(color, optionId);
+    }
+
+    @Transactional
+    @Override
+    public void deleteByProductId(Long productId) {
+        productRepository.deleteById(productId);
     }
 
     //전체 상품 조회

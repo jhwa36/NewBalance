@@ -14,9 +14,13 @@ public interface ProductService {
 
     //product
     Product addProduct(ProductDto productDto);
+    Product updateProduct(Long productId, ProductDto productDto);
     List<Product> getAllProducts();
     List<Product> findProductWithProductOptionsById(Long productId);
     Map<String, Object> getProductOption(Long productId);
+
+    void deleteByColorAndIdIn(String color, List<Integer> optionId);
+    void deleteByProductId(Long productId);
 
     //cart
     void addCart(Long memberId, Long productId, String size, String color, int count);

@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class ProductOptionDtoDetails {
+    private Long id;
     private String sizeValue;
     private int quantity;
 }

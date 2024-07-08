@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductOptionDto {
 
+    private Long id;
     private String color;
     private List<ProductOptionDtoDetails> productOptionDtoDetailsList;
 
