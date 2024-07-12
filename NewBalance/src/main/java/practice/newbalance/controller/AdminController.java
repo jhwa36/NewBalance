@@ -339,10 +339,29 @@ public class AdminController {
     public ResponseEntity<String> addCoupon(@RequestBody CouponDto couponDto){
         try {
             couponService.addCoupon(couponDto);
-            return ResponseEntity.ok("성공");
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
+    @PutMapping("/admin/updateCoupon/{couponId}")
+    public ResponseEntity<String> updateCoupon(@PathVariable("couponId") Long couponId,
+                                               @RequestBody CouponDto couponDto) {
+        try {
+            couponService.updateCoupon(couponId, couponDto);
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
         }
     }
 
+    @DeleteMapping("/admin/deleteCoupon/{couponId}")
+    public ResponseEntity<String> deleteCoupon(@PathVariable("couponId") Long couponId){
+        try {
+            couponService.deleteCoupon(couponId);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
 }

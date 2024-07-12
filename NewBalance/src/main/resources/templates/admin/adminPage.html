@@ -472,8 +472,8 @@
         <span class="close">&times;</span>
         <form id="CouponModalForm">
             <p>쿠폰명<input type="text" id="couponEditTitle"></p>
-            <p>쿠폰코드<input type="text" id="couponEditCode" disabled>
-                <button type="button" id="randomCodeBtn">코드생성</button>
+            <p>쿠폰코드<input type="text" class="couponEditCode" disabled>
+                <button type="button" class="randomCodeBtn">코드생성</button>
             </p>
             <p>기간<input type="text" id="couponEditPeriod"></p>
             <p>할인율
@@ -496,6 +496,39 @@
 </div>
 <!-- coupon Add Modal 끝 -->
 
+<!-- coupon Add Modal 시작 -->
+<div id="couponUpdateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="CouponUpdateModalForm">
+            <input type="hidden" id="couponUpdateId">
+            <p>쿠폰명<input type="text" id="couponUpdateTitle"></p>
+<!--            <p>쿠폰코드<input type="text" id="couponUpdateCode" disabled>-->
+<!--                <button type="button" id="randomCodeBtn">코드생성</button>-->
+            <p>쿠폰코드<input type="text" class="couponEditCode" disabled>
+                <button type="button" class="randomCodeBtn">코드생성</button>
+            </p>
+            <p>기간<input type="text" id="couponUpdatePeriod"></p>
+            <p>할인율
+                <select id="couponUpdateBenefit">
+                    <option value="5">5%</option>
+                    <option value="10">10%</option>
+                    <option value="15">15%</option>
+                    <option value="20">20%</option>
+                    <option value="25">25%</option>
+                    <option value="30">30%</option>
+                </select>
+            </p>
+            <p>수량<input type="text" id="couponUpdateQuantity"></p>
+            <div>
+                <button type="button" id="updateCouponBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">수정</button>
+                <button type="button" id="deleteCouponBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">삭제</button>
+                <button type="button" id="cancelUpdateCouponBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- coupon Add Modal 끝 -->
 
 <!-- product list 시작 -->
 <div id="productDivList">
@@ -711,13 +744,17 @@
                         const row = $('<tr>');
                         row.html(`
                         <td>${coupon.benefit}</td>
-                        <td>${coupon.title}</td>
+                        <td><a href="#" class="updateCoupon-link" data-id="${coupon.id}" data-benefit="${coupon.benefit}"
+                              data-period="${coupon.period}" data-quantity="${coupon.quantity}" data-code="${coupon.code}"
+                               data-title="${coupon.title}" data-status="${coupon.status}">${coupon.title}</a></td>
                         <td>${coupon.period}</td>
                         <td>${coupon.quantity}</td>
                         <td>${coupon.status}</td>
                    `);
                         couponTable.append(row);
                     });
+                    $('.updateCoupon-link').click(updateCoupon);
+
                     const remingCount = Math.max(0, response.totalCoupon - (offset + limit));
                     $('#loadCouponMore').text('더보기(' + remingCount + ')');
                     if (remingCount <= 0) {
@@ -728,6 +765,63 @@
                 }
             });
         }
+
+        function updateCoupon(event){
+            event.preventDefault();
+            const coupon = $(this).data();
+            $('#couponUpdateId').val(coupon.id);
+            $('#couponUpdateBenefit').val(coupon.benefit);
+            $('.couponEditCode').val(coupon.code);
+            $('#couponUpdatePeriod').val(coupon.period);
+            $('#couponUpdateQuantity').val(coupon.quantity);
+            $('#couponUpdateTitle').val(coupon.title);
+
+            $('#couponUpdateModal').show();
+        }
+
+        $('#updateCouponBtn').click(function(event){
+            const couponId = $('#couponUpdateId').val();
+            const dataForm = {
+                id: couponId,
+                benefit: $('#couponUpdateBenefit').val(),
+                code: $('.couponEditCode').val(),
+                period: $('#couponUpdatePeriod').val(),
+                quantity: $('#couponUpdateQuantity').val(),
+                title: $('#couponUpdateTitle').val()
+            }
+
+            $.ajax({
+                url: '/admin/updateCoupon/' + couponId,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(dataForm),
+                success: function(response) {
+                    alert('저장완료');
+                    $('#couponUpdateModal').hide();
+                    couponList();
+                },
+                error:function(xhr, status, error) {
+                    console.error('저장실패', error);
+                }
+            });
+        });
+
+        $('#deleteCouponBtn').click(function(event){
+            event.preventDefault();
+            $.ajax({
+                url: '/admin/deleteCoupon/' + $('#couponUpdateId').val(),
+                type: 'DELETE',
+                success: function(response) {
+                    alert('삭제완료');
+                    $('#couponUpdateModal').hide();
+                    couponList();
+                },
+                error: function(xhr, status, error) {
+                    console.error('삭제실패', error);
+                }
+            });
+        });
+
 
         // 공지사항 링크 클릭 모달 핸들러
         function showNoticeModal(event) {
@@ -911,6 +1005,10 @@
             $('#couponEditModal').hide();
         });
 
+        $('#cancelUpdateCouponBtn').click(function () {
+            $('#couponUpdateModal').hide();
+        });
+
         $('#cancelEditProductBtn').click(function () {
             $('#productEditModal').hide();
             $('.colorContainer').empty();
@@ -942,6 +1040,8 @@
                 $('#faqUpdateModal').hide();
             } else if (event.target === $('#couponEditModal')[0]) {
                 $('#couponEditModal').hide();
+            } else if (event.target === $('#couponUpdateModal')[0]) {
+                $('#couponUpdateModal').hide();
             } else if (event.target === $('#productEditModal')[0]) {
                 $('.colorContainer').empty();
                 $('#productCategorySelect1').empty();
@@ -981,7 +1081,7 @@
             event.preventDefault();
 
             $('#couponEditTitle').val('');
-            $('#couponEditCode').val('');
+            $('.couponEditCode').val('');
             $('#couponEditPeriod').val('');
             $('#couponEditBenefit').val('5');
             $('#couponEditQuantity').val('');
@@ -1013,7 +1113,7 @@
         $('#editCouponBtn').click(function () {
             const dataForm = {
                 title: $('#couponEditTitle').val(),
-                code: $('#couponEditCode').val(),
+                code: $('.couponEditCode').val(),
                 period: $('#couponEditPeriod').val(),
                 benefit: $('#couponEditBenefit').val(),
                 quantity: $('#couponEditQuantity').val(),
@@ -1104,7 +1204,6 @@
                     }
                 });
             } else {
-
             }
         });
 
@@ -1537,7 +1636,8 @@
         }
 
         // 쿠폰코드 생성 버튼 호출
-        $('#randomCodeBtn').click(function () {
+        // $('#randomCodeBtn').click(function () {
+        $('.randomCodeBtn').click(function () {
             randomCode();
         });
 
@@ -1548,7 +1648,7 @@
             for (let i = 0; i < 9; i++) {
                 code += characters.charAt(Math.floor(Math.random() * characters.length));
             }
-            $('#couponEditCode').val(code);
+            $('.couponEditCode').val(code);
         }
 
         // 쿠폰수량 입력필드 숫자만 입력가능
@@ -1587,6 +1687,23 @@
                 }
             });
         });
+
+        $(function () {
+            $('#couponUpdatePeriod').datepicker({
+                dateFormat: 'yy-mm-dd',
+                showMonthAfterYear: true,
+                changeYear: true,
+                changeMonth: true,
+                minDate: 0,
+                monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+                onSelect: function (dateText) {
+                    const dateTime = dateText + " 23:59:59";
+                    $(this).val(dateTime);
+                }
+            });
+        });
+
 
         $(function() {
            $('#productManufactureDate').datepicker({
@@ -1826,7 +1943,6 @@
 
             const colors = getColorDataAdd();
 
-
             // ckEditor의 데이터 imgUrl 함수에 매개변수로 전달
             const imageUrls = imgUrl(editorData);
 
@@ -1945,17 +2061,13 @@
 
             const productId = products.id;
 
-            // 카테고리 목록 로드
-            updateLoadCategoryList();
-            $('#updateProductCategorySelect2').prop('disabled', true);
-            $('#updateProductCategorySelect3').prop('disabled', true);
             // callback함수
             getProductOptions(productId, function(productDetails){
 
                 // 옵션 바인딩
                 bindProductOptions(productDetails);
 
-                //카테고리 바인딩
+                // 카테고리 바인딩
                 // 첫 번째 셀렉트박스 변경 이벤트 핸들러
                 updateLoadCategoryList(function() {
                     // 첫 번째 셀렉트 박스의 값 설정

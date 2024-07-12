@@ -16,5 +16,9 @@ public interface CouponService {
 
     // 쿠폰 등록
     CouponDto addCoupon(CouponDto couponDto);
+    CouponDto updateCoupon(Long couponId, CouponDto couponDto);
+
+    void deleteCoupon(Long couponId);
+
 
 }
