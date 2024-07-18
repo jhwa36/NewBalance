@@ -42,7 +42,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_addr_id")
     private DeliveryAddress deliveryAddress;
 
@@ -79,7 +79,7 @@ public class Order {
 
     public void setDeliveryAddress(DeliveryAddress deliveryAddress){
         this.deliveryAddress = deliveryAddress;
-        deliveryAddress.setOrder(this);
+        deliveryAddress.getOrder().add(this);
     }
 
     //비즈니스 로직

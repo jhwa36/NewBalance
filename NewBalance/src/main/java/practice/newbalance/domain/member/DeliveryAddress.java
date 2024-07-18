@@ -6,13 +6,17 @@ import lombok.*;
 import practice.newbalance.domain.item.Order;
 import practice.newbalance.dto.member.DeliveryAddressDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "DeliveryAddr")
-public class DeliveryAddress {
+public class
+DeliveryAddress {
     @Id @GeneratedValue
     private Long id;
 
@@ -36,8 +40,8 @@ public class DeliveryAddress {
     private Boolean defaultYN;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "deliveryAddress")
-    private Order order;
+    @OneToMany(mappedBy = "deliveryAddress")
+    private List<Order> order = new ArrayList<>();
 
     public DeliveryAddressDto toDTO(){
         return DeliveryAddressDto.builder()

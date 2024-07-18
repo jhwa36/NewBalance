@@ -20,10 +20,34 @@
             size : null
         }
 
+        function createOrderAll(){
+            let cartList = [];
+            let checkList = $("input[type='checkbox']");
+            $(checkList).each(function () {
+                cartList.push($(this).val());
+            });
+            requestOrder(cartList);
+        }
+
+        function createOrderSelect(){
+            let cartList = [];
+            let checkList = $("input[id='isOrder']:checked");
+            console.log(checkList);
+            for(let i = 0; i < checkList.length; i++){
+                cartList.push(checkList[i].value);
+            }
+            console.log(checkList);
+            console.log(cartList);
+            requestOrder(cartList);
+        }
+
         function createOrder(cartId){
             let cartList = [];
             cartList.push(cartId);
+            requestOrder(cartList);
+        }
 
+        function requestOrder(cartList){
             $.ajax({
                 method : "POST",
                 url : "/orders/",
@@ -172,7 +196,7 @@
             <tbody>
                 <tr id="cartRow" th:each="cart : ${cartList}">
                     <td style="text-align: center">
-                        <input type="checkbox" id="isOrder">
+                        <input type="checkbox" id="isOrder" th:value="${cart.getId()}">
                     </td>
                     <td>
                         <div class="pr">
@@ -207,6 +231,11 @@
             </tbody>
 
         </table>
+        <div class="buttonList">
+            <button id="orderAllBtn" th:onclick="|createOrderAll()|">전체 상품 주문하기</button>
+            <button id="orderSelectBtn" th:onclick="|createOrderSelect()|">선택 상품 주문하기</button>
+
+        </div>
     </div>
 
 </div>
