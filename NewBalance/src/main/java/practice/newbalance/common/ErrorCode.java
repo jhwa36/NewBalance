@@ -14,7 +14,12 @@ public enum ErrorCode {
     NOT_EXISTED_DATA("NOT_EXISTED_DATA", "데이터 조회에 실패했습니다."),
     
     //상품관련 에러 코드
-    OUT_OF_STOCK("OUT_OF_STOCK", "상품 주문 수량이 재고 수량보다 많습니다.");
+    OUT_OF_STOCK("OUT_OF_STOCK", "상품 주문 수량이 재고 수량보다 많습니다."),
+    DELIVERED_PRODUCT("DELIVERED_PRODUCT", "배송 완료된 상품은 취소가 불가능합니다."),
+
+    //주문관련 에러 코드
+    REQUIRED_SETTING_ADDRESS("REQUIRED_SETTING_ADDRESS", "배송지 설정이 되어있지 않습니다.");
+
     //401
 
     //403

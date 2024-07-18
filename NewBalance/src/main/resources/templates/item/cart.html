@@ -20,8 +20,20 @@
             size : null
         }
 
-        function createOrder(){
+        function createOrder(cartId){
+            let cartList = [];
+            cartList.push(cartId);
 
+            $.ajax({
+                method : "POST",
+                url : "/orders/",
+                data : {
+                    carts : JSON.stringify(cartList)
+                },
+                success : (response) => {
+                    location.href = "/orders/";
+                }
+            })
         }
 
         function changeOption(){
@@ -188,7 +200,7 @@
                         <p th:text="${cart.getPrice()}"></p>
                     </td>
                     <td style="text-align: center">
-                        <p><a type="button" href="" id="cart_order_btn" class="cart_btn" th:onclick="|createOrder(${cart.getId()})|">주문하기</a></p><br>
+                        <p><a href="#" id="cart_order_btn" class="cart_btn" th:onclick="|createOrder(${cart.getId()})|">주문하기</a></p><br>
                         <p><a href="#" id="cart_delete_btn" class="cart_btn" th:onclick="|delCartItem(${cart.getId()})|">삭제하기</a></p>
                     </td>
                 </tr>
