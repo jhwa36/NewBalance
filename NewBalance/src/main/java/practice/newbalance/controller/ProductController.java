@@ -25,6 +25,7 @@ import org.springframework.ui.Model;
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.item.Cart;
 import practice.newbalance.dto.item.CartDto;
+import practice.newbalance.service.item.ThumbnailDto;
 
 
 @Controller
@@ -73,15 +74,26 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/products/thumbnails/{thumbnailId}")
+    public ResponseEntity<String> deleteThumbnail(@PathVariable(value = "thumbnailId") Long thumbnailId) {
+        try {
+            productService.deleteByThumbnailId(thumbnailId);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
+
     /**
      * Product 등록
      * @param productDto
      * @return
      */
     @PostMapping("/products/addProduct")
-    public ResponseEntity<String> addItem(@RequestBody ProductDto productDto) {
+    public ResponseEntity<String> addItem(@RequestPart("productDto") ProductDto productDto,
+                                          @RequestPart("thumbnails") List<MultipartFile> thumbnails) {
         try{
-            productService.addProduct(productDto);
+            productService.addProduct(productDto,thumbnails);
             return ResponseEntity.ok("success");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
@@ -94,12 +106,15 @@ public class ProductController {
      * @param productDto
      * @return
      */
-    @PutMapping("/products/updateProduct/{productId}")
+    @PutMapping( "/products/updateProduct/{productId}")
     public ResponseEntity<String> updateItem(
             @PathVariable(value = "productId") Long productId,
-            @RequestBody ProductDto productDto) {
+            @RequestPart("productDto") ProductDto productDto,
+            @RequestPart (value = "existingThumbnails", required = false) List<ThumbnailDto> existingThumbnails, // 기존 썸네일
+            @RequestPart("thumbnails") List<MultipartFile> thumbnails // 추가된 썸네일
+            ) {
         try {
-            productService.updateProduct(productId, productDto);
+            productService.updateProduct(productId, productDto, existingThumbnails, thumbnails);
             return ResponseEntity.ok("success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");

@@ -1,6 +1,7 @@
 package practice.newbalance.service.item;
 
 import jakarta.servlet.ServletContext;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -64,5 +65,28 @@ public class FileUtils {
 //            makeThumbnail(file, basePath, 550);
 //        }
         return fileNm;
+    }
+
+    public String transferToThumbnail(MultipartFile mf, String... target) throws Exception {
+        String fileNm = null;
+        String basePath = getBasePath(target);
+        makeFolders(basePath);
+        File file;
+
+        try {
+            fileNm = getRandomFileNm(mf.getOriginalFilename());
+            file = new File(basePath, fileNm);
+            mf.transferTo(file);
+
+            // 썸네일 리사이즈 처리
+            File thumbnailFile = new File(basePath, "thumbnail_" + fileNm);
+            Thumbnails.of(file)
+                    .size(200, 200)
+                    .toFile(thumbnailFile); // 크기 조정 (200x200)
+
+            return thumbnailFile.getName();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

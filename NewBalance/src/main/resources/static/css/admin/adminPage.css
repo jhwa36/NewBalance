@@ -1,0 +1,164 @@
+body{
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar {
+    float: left;
+    width: 200px;
+    background-color: #2e2e2e;
+    height: 100%;
+    box-sizing: border-box;
+    margin-top: 100px;
+    display: inline-block;
+}
+
+.sidebar a {
+    color: #ffffff;
+    text-decoration: none;
+    display: block;
+    padding: 15px 0px 0px 0px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+.sidebar .adminMenu a:hover {
+    background-color: #444444;
+}
+
+.sidebar .adminMenu ul.hide{
+    display: none;
+}
+.sidebar .adminMenu:hover ul.hide {
+    display: none;
+}
+.sidebar ul {
+    list-style: none;
+}
+
+.adminMenu a{
+    cursor: pointer;
+}
+
+.modal{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+#noticesTable, #noticeEdit, #loadNoticeMore, #membersTable, #loadMemberMore, #faqsDivList, #categoryDivList, #couponDivList, #loadCouponMore, #productDivList {
+    display: none;
+}
+
+.tabs > .tab-item > a{
+    color: black;
+}
+.tab_list > col3{
+    float: left;
+}
+.tabs > .tab-item {
+    float: left;
+    list-style: none;
+    padding: 10px;
+    margin: 10px 10px 0 0;
+    cursor: pointer;
+    border: solid #dbdbdb;
+}
+.category_tabs > .category_tabs a{
+    color: black;
+}
+.category_tabs > .tab-item {
+    float: left;
+    list-style: none;
+    padding: 10px;
+    margin: 10px 10px 0 0;
+    cursor: pointer;
+    border: solid #dbdbdb;
+}
+
+.inner {
+    display: flex;
+    gap: 20px; /* 각 .depth 요소 간의 간격 */
+    margin-top: 30px;
+    margin-left: 40px;
+}
+
+.depth ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* ul 태그가 남은 공간을 채우도록 설정 */
+    margin-bottom: 10px; /* 목록과 버튼 그룹 사이의 간격 */
+}
+
+.depth .cateBtn input[type="text"] {
+    margin-bottom: 5px; /* 텍스트 입력 박스와 버튼들 사이의 간격 */
+}
+
+.depth .cateBtn .buttons {
+    display: flex;
+    gap: 5px; /* 버튼들 사이의 간격 */
+}
+#productWrite {
+    padding: 20px;
+    padding-left: 30px;
+}
+#productTitle, #modalEditWrite {
+    margin-top: 30px;
+    margin-left: 50px;
+}
+.post-form {
+    margin-top: 20px;
+    margin-left: 50px;
+    width: 83.3%;
+}
+.color-group {
+    display: inline-block;
+}
+.adminNav {
+    list-style: none;
+    display: block;
+}
+
+.container {
+    margin-left: 0px;
+    margin-right: 0px;
+    height: 100%;
+}
+
+.adminContent{
+    width: 100%;
+    margin-top: 135px;
+    margin-left: 400px;
+    margin-right: 400px;
+}
+#thumbnailPreview img {
+    width: 100px;
+    margin: 10px;
+}

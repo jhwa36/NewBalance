@@ -93,14 +93,14 @@ a {
     display: inline-block;
     width : 300px;
 }
-.category{
+.my_category{
     margin-top : 70px;
 }
-.category > ul > li{
+.my_category > ul > li{
     list-style: none;
     margin-bottom: 10px;
 }
-.category > ul{
+.my_category > ul{
     padding-left: 0;
 }
 

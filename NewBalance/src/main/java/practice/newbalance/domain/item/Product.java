@@ -8,6 +8,7 @@ import practice.newbalance.dto.item.ProductDto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter @Setter
@@ -57,8 +58,14 @@ public class Product extends ModifierEntity {
     @Column(name = "img_url")
     private List<String> imageUrls;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Thumbnail> thumbnailUrl = new ArrayList<>();
 
     public ProductDto toDTO(){
+        List<String> thumbnailUrls = this.thumbnailUrl.stream()
+                .map(Thumbnail::getThumbnailUrl)
+                .collect(Collectors.toList());
+
         return ProductDto.builder()
                 .id(id)
                 .title(title)
@@ -71,6 +78,7 @@ public class Product extends ModifierEntity {
                 .manufactureDate(manufactureDate)
                 .category(category)
                 .imageUrls(imageUrls)
+                .thumbnailUrl(thumbnailUrls)
                 .build();
     }
 
@@ -78,6 +86,15 @@ public class Product extends ModifierEntity {
     public void addOption(ProductOption productOption){
         productOption.setProduct(this);
         this.productOptions.add(productOption);
+    }
+
+    // thumbnail 편의 메서드
+    public void addThumbnail(Thumbnail thumbnail) {
+        thumbnailUrl.add(thumbnail);
+    }
+
+    public void removeThumbnail(Thumbnail thumbnail) {
+        thumbnailUrl.remove(thumbnail);
     }
 
 }

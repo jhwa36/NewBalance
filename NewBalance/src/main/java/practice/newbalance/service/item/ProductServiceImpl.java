@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import practice.newbalance.common.exception.CustomException;
 import practice.newbalance.domain.item.Cart;
 import practice.newbalance.domain.item.Product;
 import practice.newbalance.domain.item.ProductOption;
+import practice.newbalance.domain.item.Thumbnail;
 import practice.newbalance.domain.member.Member;
 import practice.newbalance.dto.item.ProductDto;
 import practice.newbalance.dto.item.ProductOptionDto;
@@ -21,8 +23,10 @@ import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CartRepository;
 import practice.newbalance.repository.item.ProductOptionRepository;
 import practice.newbalance.repository.item.ProductRepository;
+import practice.newbalance.repository.item.ThumbnailRepository;
 import practice.newbalance.repository.item.query.CustomProductRepository;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,10 @@ public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
     private final CustomProductRepository customProductRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final ThumbnailRepository thumbnailRepository;
+
+    @Value("${server.url}")
+    private String serverUrl; // 서버 URL을 프로퍼티 파일에서 읽어옴
 
     @Transactional
     @Override
@@ -57,6 +65,28 @@ public class ProductServiceImpl implements ProductService{
         json.put("fileName", imgFolder);
         json.put("url", folder + "/" + imgFolder);
         return json;
+    }
+
+    private List<String> saveThumbnails(List<MultipartFile> thumbnails) throws IOException {
+        List<String> thumbnailUrls = new ArrayList<>();
+        String folder = "/res/img/product/thumbnails"; // 썸네일이 저장될 폴더 경로
+
+        for (MultipartFile file : thumbnails) {
+            try {
+                String fileName = futils.transferToThumbnail(file, folder);
+                thumbnailUrls.add(serverUrl + folder + "/" + fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IOException("Failed to save thumbnail", e);
+            }
+        }
+        return thumbnailUrls;
+    }
+
+    @Transactional
+    @Override
+    public void deleteByThumbnailId(Long thumbnailId) {
+        thumbnailRepository.deleteById(thumbnailId);
     }
 
     @Override
@@ -95,7 +125,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Transactional
     @Override
-    public Product addProduct(ProductDto productDto) {
+    public Product addProduct(ProductDto productDto, List<MultipartFile> thumbnails) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         List<ProductOptionDto> productOptionDtoList = null;
@@ -105,6 +135,9 @@ public class ProductServiceImpl implements ProductService{
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        List<String> thumbnailUrls = saveThumbnails(thumbnails);
+        productDto.setThumbnailUrl(thumbnailUrls); // ProductDto에 썸네일 URL 추가
 
         Product product = new Product();
         product.setCode(productDto.getCode());
@@ -117,6 +150,11 @@ public class ProductServiceImpl implements ProductService{
         product.setContent(productDto.getContent());
         product.setImageUrls(productDto.getImageUrls());
         product.setCategory(productDto.getCategory());
+
+        for(String url : thumbnailUrls) {
+            Thumbnail thumbnail = new Thumbnail(url, product);
+            product.addThumbnail(thumbnail);
+        }
 
         for(ProductOptionDto productOptionDto : productOptionDtoList) {
             String color = productOptionDto.getColor();
@@ -134,9 +172,10 @@ public class ProductServiceImpl implements ProductService{
         }
         return productRepository.save(product);
     }
+
     @Transactional
     @Override
-    public Product updateProduct(Long productId, ProductDto productDto) {
+    public Product updateProduct(Long productId, ProductDto productDto, List<ThumbnailDto> existingThumbnails, List<MultipartFile> newThumbnails) throws IOException{
         // 기존 Product 불러오기
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
@@ -165,6 +204,24 @@ public class ProductServiceImpl implements ProductService{
         product.setCategory(productDto.getCategory());
         product.setContent(productDto.getContent());
         product.setImageUrls(productDto.getImageUrls());
+
+        // 기존 썸네일 업데이트
+        for (ThumbnailDto dto : existingThumbnails) {
+            Thumbnail thumbnail = product.getThumbnailUrl().stream()
+                    .filter(t -> t.getId().equals(dto.getId()))
+                    .findFirst()
+                    .orElse(null);
+            if(thumbnail != null) {
+                thumbnail.updateUrl(dto.getThumbnailUrl());
+                thumbnailRepository.save(thumbnail);
+            }
+        }
+
+        List<String> newThumbnailUrls = saveThumbnails(newThumbnails);
+        for(String url : newThumbnailUrls) {
+            Thumbnail newThumbnail = new Thumbnail(url, product);
+            product.addThumbnail(newThumbnail);
+        }
 
         // 기존 ProductOptions 삭제
         product.getProductOptions().clear();

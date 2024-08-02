@@ -4,10 +4,12 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 import practice.newbalance.domain.item.Category;
 import practice.newbalance.domain.item.Product;
+import practice.newbalance.domain.item.Thumbnail;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
@@ -41,6 +43,8 @@ public class ProductDto {
 
     private List<String> imageUrls = new ArrayList<>();
 
+    private List<String> thumbnailUrl;  // 썸네일 URL 리스트 추가
+
     @QueryProjection
     public ProductDto(Long id, String title, String content, String code,
                       String contry, String material, String features, int price,
@@ -60,7 +64,7 @@ public class ProductDto {
 
 
     public Product toEntity(){
-        return Product.builder()
+        Product product = Product.builder()
                 .id(id)
                 .title(title)
                 .content(content)
@@ -73,5 +77,12 @@ public class ProductDto {
                 .category(category)
                 .imageUrls(imageUrls)
                 .build();
+
+        List<Thumbnail> thumbnails = this.thumbnailUrl.stream()
+                .map(url -> new Thumbnail(url, product))
+                .collect(Collectors.toList());
+
+        product.setThumbnailUrl(thumbnails);
+        return product;
     }
 }
