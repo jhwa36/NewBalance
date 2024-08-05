@@ -1,6 +1,7 @@
 package practice.newbalance.repository.board.item;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import practice.newbalance.domain.item.Coupon;
 import practice.newbalance.domain.member.Member;
+import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CouponRepository;
 import practice.newbalance.service.item.CouponServiceImpl;
 
@@ -32,7 +34,20 @@ class CouponRepositoryTest {
     private CouponRepository couponRepository;
 
     @Autowired
-    private EntityManager em;
+    private MemberRepository memberRepository;
+
+    @PersistenceContext
+    EntityManager em;
+
+    @Test
+    @Transactional
+    void test_lock2(){
+        Member member = new Member();
+        member.setName("test");
+        em.persist(member);
+        System.out.println("member.getId() = " + member.getId());
+    }
+
 
     @Test
     @Transactional(readOnly = false)
@@ -48,10 +63,12 @@ class CouponRepositoryTest {
     AtomicInteger failCount = new AtomicInteger();
         Coupon coupon = new Coupon("benefit","title", LocalDateTime.of(2024, 12, 31, 0, 0), "code", NEW, 5);
         Member member = new Member();
-        coupon.getMembers().add(member);
 
-        couponRepository.save(coupon);
-        System.out.println("1번"+couponRepository.findById(1L));
+        coupon.addMember(member);
+        memberRepository.save(member);
+        Coupon coupon2 = couponRepository.save(coupon);
+        System.out.println("coupon2 = " + coupon2);
+
         List<Coupon> coupons = couponRepository.findAll();
         for(Coupon coupon1 : coupons) {
             System.out.println("쿠폰리스트"+coupon1);

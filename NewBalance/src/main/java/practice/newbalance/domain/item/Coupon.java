@@ -44,12 +44,13 @@ public class Coupon extends ModifierEntity {
     private int quantity; // 쿠폰 수량
 
     //    @JsonIgnore // 양방향 걸린 곳은 꼭 한곳을 설정
-    @OneToMany(mappedBy = "coupon")
-    private List<Member> members = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    public void addCoupon(Member member){
-        members.add(member);
-        member.setCoupon(this);
+    public void addMember(Member member){
+        this.member = member;
+        member.getCoupons().add(this);
     }
 
     public void isCoupon() {

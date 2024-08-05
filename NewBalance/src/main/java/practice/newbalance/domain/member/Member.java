@@ -45,9 +45,8 @@ public class Member {
     @Column(name = "role")
     private String role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    private Coupon coupon;
+    @OneToMany
+    private List<Coupon> coupons = new ArrayList<>();
 
     @OneToMany(mappedBy = "memberId")
     private List<DeliveryAddress> address = new ArrayList<>();
@@ -68,10 +67,4 @@ public class Member {
                 .build();
         return memberDto;
     }
-
-    public void addCoupon(Coupon coupon){
-        this.coupon = coupon;
-        coupon.getMembers().add(this);
-    }
-
 }

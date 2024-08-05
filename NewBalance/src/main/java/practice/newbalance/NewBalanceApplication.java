@@ -21,6 +21,6 @@ public class NewBalanceApplication {
     @Bean
     public AuditorAware<String> auditorProvider(HttpSession session){
         return () -> Optional.of(session.getAttribute("principal").toString());
+//        return () -> Optional.of(UUID.randomUUID().toString());
     }
-
 }
