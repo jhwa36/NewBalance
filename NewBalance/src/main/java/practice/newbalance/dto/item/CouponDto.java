@@ -21,6 +21,8 @@ public class CouponDto {
     private String title;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime sDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime period;
     private String code;
     private CouponEnum status;
@@ -29,10 +31,11 @@ public class CouponDto {
     private Member member;
 
     @QueryProjection
-    public CouponDto(Long id, String benefit, String title, LocalDateTime period, String code, CouponEnum status, int quantity) {
+    public CouponDto(Long id, String benefit, String title, LocalDateTime sDate, LocalDateTime period, String code, CouponEnum status, int quantity) {
         this.id = id;
         this.benefit = benefit;
         this.title = title;
+        this.sDate = sDate;
         this.period = period;
         this.code = code;
         this.status = status;
@@ -45,6 +48,7 @@ public class CouponDto {
                 .benefit(benefit)
                 .title(title)
 //                .period(LocalDateTime.parse(period.toString(), DateTimeFormatter.ISO_DATE_TIME))
+                .sDate(sDate)
                 .period(period)
                 .code(code)
                 .status(status)

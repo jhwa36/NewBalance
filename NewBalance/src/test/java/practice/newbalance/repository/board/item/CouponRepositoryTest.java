@@ -61,7 +61,7 @@ class CouponRepositoryTest {
 
     AtomicInteger successCount = new AtomicInteger();
     AtomicInteger failCount = new AtomicInteger();
-        Coupon coupon = new Coupon("benefit","title", LocalDateTime.of(2024, 12, 31, 0, 0), "code", NEW, 5);
+        Coupon coupon = new Coupon("benefit","title", LocalDateTime.of(2024, 12, 31, 0, 0),LocalDateTime.of(2024, 12, 30, 0, 0), "code", NEW, 5);
         Member member = new Member();
 
         coupon.addMember(member);

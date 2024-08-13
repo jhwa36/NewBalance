@@ -8,11 +8,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import practice.newbalance.common.ErrorCode;
 import practice.newbalance.common.exception.CustomException;
+import practice.newbalance.domain.item.Coupon;
+import practice.newbalance.domain.item.CouponEnum;
 import practice.newbalance.domain.member.DeliveryAddress;
 import practice.newbalance.domain.member.Member;
 import practice.newbalance.dto.member.DeliveryAddressDto;
 import practice.newbalance.dto.member.MemberDto;
 import practice.newbalance.repository.MemberRepository;
+import practice.newbalance.repository.item.CouponRepository;
 import practice.newbalance.repository.user.DeliveryAddressRepository;
 
 import java.util.*;
@@ -24,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CouponRepository couponRepository;
 
     public Long join(MemberDto memberDto) {
 
@@ -175,5 +179,51 @@ public class MemberService {
         return ResponseEntity.ok("success");
     }
 
+    @Transactional
+    public String registorCoupon(Long memberId, String code) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.MEMBER_NOT_FOUND));
+
+        // 유효성 검사 및 쿠폰 등록
+        if(couponRepository.existsByMemberAndCode(member, code)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.COUPON_ALREADY_REGISTERED);
+        }
+
+        // 유효한 쿠폰인지 확인(DB에 존재하는지 확인)
+        Coupon existingCoupon = couponRepository.findByCodeForUpdate(code);
+        if(existingCoupon == null){
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_COUPON);
+        }
+
+        // 쿠폰 수량이 남아있는지 확인
+        if(existingCoupon.getQuantity() <= 0) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.COUPON_OUT_OF_STOCK);
+        } else if(existingCoupon.getStatus() == CouponEnum.EXPIRED) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.COUPON_EXPIRED);
+        } else if(existingCoupon.getStatus() == CouponEnum.USED) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.COUPON_USED);
+        }
+
+        Coupon newCoupon = new Coupon();
+        newCoupon.setCode(existingCoupon.getCode());
+        newCoupon.setBenefit(existingCoupon.getBenefit());
+        newCoupon.setTitle(existingCoupon.getTitle());
+        newCoupon.setPeriod(existingCoupon.getPeriod());
+        newCoupon.setQuantity(1); // 회원에게 발급된 개별 쿠폰의 수량은 1로 설정
+        newCoupon.setStatus(CouponEnum.NOT_USED);
+        newCoupon.setMember(member);
+
+        // 기존 쿠폰의 수량 감소
+        existingCoupon.setQuantity(existingCoupon.getQuantity() -1);
+        couponRepository.save(existingCoupon);
+
+        // 새로운 쿠폰 저장
+        couponRepository.save(newCoupon);
+
+        member.addCoupon(newCoupon);
+        memberRepository.save(member);
+
+        return "쿠폰이 성공적으로 등록되었습니다.";
+    }
 
 }

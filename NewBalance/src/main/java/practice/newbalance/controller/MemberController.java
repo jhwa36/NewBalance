@@ -3,6 +3,7 @@ package practice.newbalance.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -174,5 +175,28 @@ public class MemberController {
     @DeleteMapping("/my/delivery-addr/{addrId}")
     public ResponseEntity<String> DeleteDeliveryAddr(@PathVariable("addrId") long addrId){
         return memberService.deleteAddress(addrId);
+    }
+
+    /**
+     * 마이페이지 쿠폰페이지 이동
+     * @return
+     */
+    @GetMapping("/my/couponList")
+    public String couponListHome(Model model,
+                                 @AuthenticationPrincipal CustomUserDetail customUserDetail){
+        return "member/user/myPage-couponList";
+    }
+
+    @PostMapping("/my/couponAdd")
+    public ResponseEntity<String> couponAdd(
+            @AuthenticationPrincipal CustomUserDetail customUserDetail,
+            @RequestParam("code") String code) {
+
+        try {
+            String result = memberService.registorCoupon(customUserDetail.getMember().getId(), code);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠폰 등록 중 오류가 발생했습니다.");
+        }
     }
 }

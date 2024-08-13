@@ -30,6 +30,9 @@ public class Coupon extends ModifierEntity {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "sDate")
+    private LocalDateTime sDate;
+
     @Column(name = "peroid")
     private LocalDateTime period;
 
@@ -65,6 +68,7 @@ public class Coupon extends ModifierEntity {
                 .id(id)
                 .benefit(benefit)
                 .title(title)
+                .sDate(sDate)
                 .period(period)
                 .code(code)
                 .status(status)
@@ -73,9 +77,10 @@ public class Coupon extends ModifierEntity {
         return couponDto;
     }
 
-    public Coupon(String benefit, String title, LocalDateTime period, String code, CouponEnum status, int quantity) {
+    public Coupon(String benefit, String title, LocalDateTime sDate, LocalDateTime period,  String code, CouponEnum status, int quantity) {
         this.benefit = benefit;
         this.title = title;
+        this.sDate = sDate;
         this.period = period;
         this.code = code;
         this.status = status;

@@ -6,6 +6,7 @@ import lombok.*;
 import practice.newbalance.domain.board.Notice;
 import practice.newbalance.domain.item.Coupon;
 import practice.newbalance.domain.item.Order;
+import practice.newbalance.domain.item.ProductOption;
 import practice.newbalance.dto.member.MemberDto;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class Member {
     @Column(name = "role")
     private String role;
 
-    @OneToMany
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coupon> coupons = new ArrayList<>();
 
     @OneToMany(mappedBy = "memberId")
@@ -66,5 +67,10 @@ public class Member {
                 .role(role)
                 .build();
         return memberDto;
+    }
+
+    public void addCoupon(Coupon coupon){
+        this.coupons.add(coupon);
+        coupon.setMember(this);
     }
 }

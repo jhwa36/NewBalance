@@ -27,6 +27,7 @@ public class CouponRepositoryImpl implements CustomCouponRepository {
                 coupon.id,
                 coupon.benefit,
                 coupon.title,
+                coupon.sDate,
                 coupon.period,
                 coupon.code,
                 coupon.status,

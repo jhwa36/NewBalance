@@ -104,10 +104,10 @@ $(document).ready(function () {
                     const row = $('<tr>');
                     row.html(`
                         <td>${coupon.benefit}</td>
-                        <td><a href="#" class="updateCoupon-link" data-id="${coupon.id}" data-benefit="${coupon.benefit}"
+                        <td><a href="#" class="updateCoupon-link" data-id="${coupon.id}" data-status="${coupon.status}" data-benefit="${coupon.benefit}"
                               data-period="${coupon.period}" data-quantity="${coupon.quantity}" data-code="${coupon.code}"
-                               data-title="${coupon.title}" data-status="${coupon.status}">${coupon.title}</a></td>
-                        <td>${coupon.period}</td>
+                               data-title="${coupon.title}" data-sDate="${coupon.sDate}" data-status="${coupon.status}">${coupon.title}</a></td>
+                        <td>${coupon.sDate} ~ ${coupon.period}</td>
                         <td>${coupon.quantity}</td>
                         <td>${coupon.status}</td>
                    `);
@@ -129,10 +129,13 @@ $(document).ready(function () {
     function updateCoupon(event){
         event.preventDefault();
         const coupon = $(this).data();
+
         $('#couponUpdateId').val(coupon.id);
+        $('#couponUpdateStatus').val(coupon.status);
         $('#couponUpdateBenefit').val(coupon.benefit);
         $('.couponEditCode').val(coupon.code);
-        $('#couponUpdatePeriod').val(coupon.period);
+        $('#couponUpdatesDate').val(coupon.sdate.split(' ')[0]);
+        $('#couponUpdatePeriod').val(coupon.period.split(' ')[0]);
         $('#couponUpdateQuantity').val(coupon.quantity);
         $('#couponUpdateTitle').val(coupon.title);
 
@@ -145,9 +148,11 @@ $(document).ready(function () {
             id: couponId,
             benefit: $('#couponUpdateBenefit').val(),
             code: $('.couponEditCode').val(),
-            period: $('#couponUpdatePeriod').val(),
+            sDate: $('#couponUpdatesDate').val() + ' 00:00:00',
+            period: $('#couponUpdatePeriod').val() + ' 23:59:59',
             quantity: $('#couponUpdateQuantity').val(),
-            title: $('#couponUpdateTitle').val()
+            title: $('#couponUpdateTitle').val(),
+            status: $('#couponUpdateStatus').val()
         }
 
         $.ajax({
@@ -159,6 +164,15 @@ $(document).ready(function () {
                 alert('저장완료');
                 $('#couponUpdateModal').hide();
                 couponList();
+
+                $('#couponUpdateId').val('');
+                $('#couponUpdateBenefit').val('');
+                $('.couponEditCode').val('');
+                $('#couponUpdatesDate').val('');
+                $('#couponUpdatePeriod').val('');
+                $('#couponUpdateQuantity').val('');
+                $('#couponUpdateTitle').val('');
+                $('#couponUpdateStatus').val('');
             },
             error:function(xhr, status, error) {
                 console.error('저장실패', error);
@@ -352,6 +366,7 @@ $(document).ready(function () {
         $('#faqEditModal').hide();
         $('#faqUpdateModal').hide();
         $('#couponEditModal').hide();
+        $('#couponUpdateModal').hide();
         $('#productEditModal').hide();
         $('#productUpdateModal').hide();
         $('.colorContainer').remove();
@@ -467,6 +482,7 @@ $(document).ready(function () {
 
         $('#couponEditTitle').val('');
         $('.couponEditCode').val('');
+        $('#couponSdate').val('');
         $('#couponEditPeriod').val('');
         $('#couponEditBenefit').val('5');
         $('#couponEditQuantity').val('');
@@ -499,7 +515,8 @@ $(document).ready(function () {
         const dataForm = {
             title: $('#couponEditTitle').val(),
             code: $('.couponEditCode').val(),
-            period: $('#couponEditPeriod').val(),
+            sDate: $('#couponSdate').val() + ' 00:00:00',
+            period: $('#couponEditPeriod').val() + ' 23:59:59',
             benefit: $('#couponEditBenefit').val(),
             quantity: $('#couponEditQuantity').val(),
             status: 'NEW'
@@ -1028,11 +1045,7 @@ $(document).ready(function () {
 
     // 쿠폰코드 생성 함수
     function randomCode() {
-        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let code = '';
-        for (let i = 0; i < 9; i++) {
-            code += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
+        let code = uuid.v4().replace(/-/g, '').substring(0, 9).toUpperCase();
         $('.couponEditCode').val(code);
     }
 
@@ -1058,17 +1071,49 @@ $(document).ready(function () {
 
     // jQuery 달력위젯
     $(function () {
+        $('#couponSdate').datepicker({
+            dateFormat: 'yy-mm-dd',
+            showMonthAfterYear: true,
+            changeYear: true,
+            changeMonth: true,
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            onSelect: function (dateText) {
+                $(this).val(dateText);
+
+                $('#couponEditPeriod').datepicker('option', 'minDate', dateText);
+            }
+        });
+    });
+
+    $(function () {
         $('#couponEditPeriod').datepicker({
             dateFormat: 'yy-mm-dd',
             showMonthAfterYear: true,
             changeYear: true,
             changeMonth: true,
-            minDate: 0,
+            minDate: 0, // 기본 0으로 설정
             monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
             dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
             onSelect: function (dateText) {
-                const dateTime = dateText + " 23:59:59";
-                $(this).val(dateTime);
+                $(this).val(dateText);
+            }
+        });
+    });
+
+    $(function () {
+        $('#couponUpdatesDate').datepicker({
+            dateFormat: 'yy-mm-dd',
+            showMonthAfterYear: true,
+            changeYear: true,
+            changeMonth: true,
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            onClose: function (dateText) {
+                $(this).val(dateText);
+                $('#couponUpdatePeriod').datepicker('option', 'minDate', dateText);
+
+
             }
         });
     });
@@ -1079,16 +1124,21 @@ $(document).ready(function () {
             showMonthAfterYear: true,
             changeYear: true,
             changeMonth: true,
-            minDate: 0,
             monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
             dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
             onSelect: function (dateText) {
-                const dateTime = dateText + " 23:59:59";
-                $(this).val(dateTime);
+                $(this).val(dateText);
+            },
+            beforeShow: function() {
+
+                // datepicker가 열리기 전에 minDate를 업데이트
+                var sDate = $('#couponUpdatesDate').val();
+                if(sDate){
+                    $(this).datepicker('option', 'minDate', sDate);
+                }
             }
         });
     });
-
 
     $(function() {
         $('#productManufactureDate').datepicker({

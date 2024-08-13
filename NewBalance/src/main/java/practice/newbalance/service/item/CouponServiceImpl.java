@@ -47,6 +47,7 @@ public class CouponServiceImpl implements CouponService {
                 () -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
         coupon.setBenefit(couponDto.getBenefit());
         coupon.setCode(couponDto.getCode());
+        coupon.setSDate(couponDto.getSDate());
         coupon.setPeriod(couponDto.getPeriod());
         coupon.setQuantity(couponDto.getQuantity());
         coupon.setTitle(couponDto.getTitle());
