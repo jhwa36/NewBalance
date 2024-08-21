@@ -217,10 +217,16 @@ public class ProductServiceImpl implements ProductService{
             }
         }
 
-        List<String> newThumbnailUrls = saveThumbnails(newThumbnails);
-        for(String url : newThumbnailUrls) {
-            Thumbnail newThumbnail = new Thumbnail(url, product);
-            product.addThumbnail(newThumbnail);
+        // 새 썸네일 저장
+        if(newThumbnails != null && !newThumbnails.isEmpty()) {
+            List<String> newThumbnailUrls = saveThumbnails(newThumbnails);
+            for(String url : newThumbnailUrls) {
+                Thumbnail newThumbnail = new Thumbnail(url, product);
+                product.addThumbnail(newThumbnail);
+
+            }
+        } else {
+            // 새 썸네일이 없을 경우 기존 썸네일 유지
         }
 
         // 기존 ProductOptions 삭제

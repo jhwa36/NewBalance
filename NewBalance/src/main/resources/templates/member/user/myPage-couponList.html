@@ -5,7 +5,14 @@
       layout:decorate="~{common/config/myPageLayout}"
       layout:fragment="myContent">
 <head>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
       <link rel="stylesheet" href="/css/member/member-couponList.css">
+
+
 </head>
 
       <div class="my_cont">
@@ -62,17 +69,16 @@
                                   <div class="right-wrap">
                                         <div class="date">
                                               <span class="datepicker">
-                                                    <input type="text" title="시작일자" readonly="readonly" class="ip_text hasDatepicker" name="sDate" id="sDate">
+                                                    <input type="text" title="시작일자" readonly="readonly" class="ip_text" id="sDate">
                                                     <a href="" class="btn_date" id="sDate2"></a>
                                               </span>
                                               <span class="unit">~</span>
                                               <span class="datepicker">
-                                                    <input type="text" title="종료일자" readonly="readonly" class="ip_text hasDatepicker" name="eDate" id="eDate">
+                                                    <input type="text" title="종료일자" readonly="readonly" class="ip_text" id="eDate">
                                                     <a href="" class="btn_date" id="eDate2"></a>
                                               </span>
                                               <a href="" class="btn_ty_gface xs" id="searchCoupon">조회</a>
                                         </div>
-                                        <input type="hidden" name="selectPeriod">
                                   </div>
                             </fieldset>
                       </div>
@@ -84,23 +90,15 @@
                                           <col style="width:123px">
                                           <col style="width:auto">
                                           <col style="width:auto">
-                                          <col style="width:140px">
                                     </colgroup>
-                                    <thead>
+                                    <thead id="couponTable">
                                           <tr>
                                                 <th scope="col">혜택</th>
                                                 <th scope="col">쿠폰명</th>
-                                                <th scope="col">사용조건</th>
                                                 <th scope="col">사용기간</th>
                                           </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                          <td colspan="16" class="no_data">
-                                                <p class="txt01">쿠폰 내역이 없습니다.</p>
-                                          </td>
-                                    </tr>
-                                          <!-- 쿠폰리스트 내용 추가-->
+                                    <tbody id="couponTableBody">
                                     </tbody>
                               </table>
                         </div>
@@ -111,28 +109,44 @@
             </div>
       </div>
 <script>
-      // 쿠폰 등록
-      $('#btnCouponReg').click(function(event){
-            event.preventDefault();
-            const couponName = $('#couponName').val();
-            console.log(couponName)
-            $.ajax({
-                  url: '/my/couponAdd',
-                  type: 'POST',
-                  data: {code: couponName},
-                  success: function(response) {
-                        alert(response);
-                        $('#couponName').val('');
-                  },
-                  error:function(xhr, status, error){
-                        console.error(error);
-                  }
-            });
-      });
-
-
-
       $(document).ready(function(){
+            let offset = 0; // 초기 오프셋값
+            const limit  = 3; // 한 번에 가져올 쿠폰 수
+
+            $('#sDate').datepicker({
+                  dateFormat: 'yy-mm-dd',
+                  showMonthAfterYear: true,
+                  changeYear: true,
+                  changeMonth: true,
+                  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+                  onSelect: function (dateText) {
+                        $(this).val(dateText);
+                        $('#eDate').datepicker('option', 'minDate', dateText);
+                  },
+            });
+            $('#sDate2').click(function(event) {
+                  event.preventDefault(); // 링크의 기본 동작을 방지
+                  $('#sDate').datepicker('show'); // 날짜 선택기 표시
+            });
+
+            $('#eDate').datepicker({
+                  dateFormat: 'yy-mm-dd',
+                  showMonthAfterYear: true,
+                  changeYear: true,
+                  changeMonth: true,
+                  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+                  onClose: function (dateText) {
+                        $(this).val(dateText);
+                  },
+            });
+
+            $('eDate2').click(function(event) {
+                  event.preventDefault();
+                  $('#eDate').datepicker('show');
+            })
+
          // period 라는 이름을가진 라디오 버튼 선택
          $('input[name="period"]').change(function (){
             var today = new Date();
@@ -169,6 +183,90 @@
                   newDate.setMonth(newDate.getMonth() - months);
                   return newDate;
             }
+            couponList();
+
+            function couponList(){
+                  const data = {
+                        sDate: $('#sDate').val(),
+                        period: $('#eDate').val(),
+                        offset: offset,
+                        limit: limit
+                  }
+                  $.ajax({
+                     url: '/my/couponList',
+                     data: data,
+                     type: 'get',
+                     success: function(response) {
+                           const couponDtos = response.couponDtos;
+
+                           const tableBody = $('#couponTableBody');
+
+                           if( couponDtos.length > 0 ) {
+
+                           // 서버에서 받은 데이터를 반복 처리하여 테이블 추가
+                                 couponDtos.forEach(coupon => {
+                                 const row = `<tr>
+                                                <td>${coupon.benefit}%</td>
+                                                <td>${coupon.title}</td>
+                                                <td>
+                                                      <span>${coupon.formattedSDate}</span>
+                                                      <span> ~ </span>
+                                                      <span>${coupon.formattedPeriod}</span>
+                                                </td>
+                                              </tr>`;
+                                 tableBody.append(row);
+                           });
+                                 const reamingCount = Math.max(0, response.totalCount - (offset + limit));
+                                 $('#viewMore').text('더보기(' + reamingCount + ')');
+
+                                 if(reamingCount <= 0) {
+                                       $('#viewMore').hide();
+                                 } else {
+                                       $('#viewMore').show();
+                                 }
+                     } else {
+                                 tableBody.append('<tr><td colspan="3" class="no_data">' +
+                                         '<p class="txt01">쿠폰 내역이 없습니다.</p>' +
+                                         '</td></tr>');
+                           }
+                        },
+                        error: function(xhr, status, error){
+                           console.error('실패');
+                        }
+                  });
+            }
+
+            $('#viewMore').click(function (event){
+                  event.preventDefault();
+                  offset += limit; // 오프셋 증가
+                  couponList();
+            })
+
+
+            // 쿠폰 등록
+            $('#btnCouponReg').click(function(event){
+                  event.preventDefault();
+                  const couponName = $('#couponName').val();
+                  $.ajax({
+                        url: '/my/couponAdd',
+                        type: 'POST',
+                        data: {code: couponName},
+                        dataType: 'json',
+                        success: function(response) {
+                              alert(response);
+                              $('#couponName').val('');
+                              couponList();
+                        },
+                        error:function(xhr, status, error){
+                              alert(xhr.responseText); // 에러 메시지 표시
+                        }
+                  });
+            });
+
+            $('#searchCoupon').click(function (event){
+                  event.preventDefault();
+                  couponList();
+            });
       });
 </script>
 </html>

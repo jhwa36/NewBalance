@@ -228,11 +228,22 @@ table {
 }
 .tbl_y tbody td {
     border-bottom: 1px solid #dbdbdb;
+    padding: 8px;
+}
+.tbl_y td {
+    height: 100px;
+    padding: 0 10px;
+    color: #444;
+    text-align: center;
+    line-height: 21px;
 }
 table .no_data {
     height: 285px !important;
     vertical-align: top !important;
     text-align: center !important;
+}
+.colgroup col {
+    width: auto;
 }
 .no_data .txt01 {
     padding: 167px 0 0;

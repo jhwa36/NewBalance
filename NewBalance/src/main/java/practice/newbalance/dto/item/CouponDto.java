@@ -30,6 +30,9 @@ public class CouponDto {
 
     private Member member;
 
+    private String formattedSDate;
+    private String formattedPeriod;
+
     @QueryProjection
     public CouponDto(Long id, String benefit, String title, LocalDateTime sDate, LocalDateTime period, String code, CouponEnum status, int quantity) {
         this.id = id;

@@ -110,8 +110,8 @@ public class ProductController {
     public ResponseEntity<String> updateItem(
             @PathVariable(value = "productId") Long productId,
             @RequestPart("productDto") ProductDto productDto,
-            @RequestPart (value = "existingThumbnails", required = false) List<ThumbnailDto> existingThumbnails, // 기존 썸네일
-            @RequestPart("thumbnails") List<MultipartFile> thumbnails // 추가된 썸네일
+            @RequestPart(value = "existingThumbnails", required = false) List<ThumbnailDto> existingThumbnails, // 기존 썸네일
+            @RequestPart(value = "thumbnails", required = false) List<MultipartFile> thumbnails // 추가된 썸네일
             ) {
         try {
             productService.updateProduct(productId, productDto, existingThumbnails, thumbnails);

@@ -1130,7 +1130,6 @@ $(document).ready(function () {
                 $(this).val(dateText);
             },
             beforeShow: function() {
-
                 // datepicker가 열리기 전에 minDate를 업데이트
                 var sDate = $('#couponUpdatesDate').val();
                 if(sDate){
@@ -2142,8 +2141,10 @@ $(document).ready(function () {
 
         // 새 썸네일 파일 추가
         const newThumbnailFiles = document.getElementById('updateThumbnailInput').files;
-        for (let i = 0; i < newThumbnailFiles.length; i++) {
-            formData.append('thumbnails', newThumbnailFiles[i]);
+        if (newThumbnailFiles.length > 0) {
+            for (let i = 0; i < newThumbnailFiles.length; i++) {
+                formData.append('thumbnails', newThumbnailFiles[i]);
+            }
         }
 
         $.ajax({

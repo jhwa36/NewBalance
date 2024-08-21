@@ -12,12 +12,16 @@ import practice.newbalance.domain.item.Coupon;
 import practice.newbalance.domain.item.CouponEnum;
 import practice.newbalance.domain.member.DeliveryAddress;
 import practice.newbalance.domain.member.Member;
+import practice.newbalance.dto.item.CouponDto;
 import practice.newbalance.dto.member.DeliveryAddressDto;
 import practice.newbalance.dto.member.MemberDto;
 import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CouponRepository;
+import practice.newbalance.repository.item.query.CouponRepositoryImpl;
 import practice.newbalance.repository.user.DeliveryAddressRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -28,6 +32,7 @@ public class MemberService {
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CouponRepository couponRepository;
+    private final CouponRepositoryImpl couponRepositoryImpl;
 
     public Long join(MemberDto memberDto) {
 
@@ -208,6 +213,7 @@ public class MemberService {
         newCoupon.setCode(existingCoupon.getCode());
         newCoupon.setBenefit(existingCoupon.getBenefit());
         newCoupon.setTitle(existingCoupon.getTitle());
+        newCoupon.setSDate(existingCoupon.getSDate());
         newCoupon.setPeriod(existingCoupon.getPeriod());
         newCoupon.setQuantity(1); // 회원에게 발급된 개별 쿠폰의 수량은 1로 설정
         newCoupon.setStatus(CouponEnum.NOT_USED);
@@ -224,6 +230,24 @@ public class MemberService {
         memberRepository.save(member);
 
         return "쿠폰이 성공적으로 등록되었습니다.";
+    }
+
+    /**
+     * 사용자 쿠폰 목록 조회 및 날짜 검색
+     * @param memberId
+     * @param startDate
+     * @param endDate
+     * @param offset
+     * @param limit
+     * @return
+     */
+    public List<CouponDto> memberCouponse(Long memberId, LocalDateTime startDate, LocalDateTime endDate, int offset, int limit){
+        List<CouponDto> result = couponRepositoryImpl.findCouponsByCriteria(memberId, startDate, endDate, offset, limit);
+        return result;
+    }
+
+    public long getCouponCount(Long memberId, LocalDateTime startDate, LocalDateTime endDate) {
+        return couponRepositoryImpl.getCouponCount(memberId, startDate, endDate);
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import practice.newbalance.domain.item.Coupon;
+import practice.newbalance.domain.item.CouponEnum;
 import practice.newbalance.domain.member.Member;
 
 import java.util.Optional;
@@ -24,4 +25,5 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     boolean existsByMemberAndCode(Member member, String code);
 
     boolean existsByCode(String Code);
+
 }

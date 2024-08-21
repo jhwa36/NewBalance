@@ -3,6 +3,7 @@ package practice.newbalance.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,8 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import practice.newbalance.common.exception.CustomException;
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.member.DeliveryAddress;
+import practice.newbalance.dto.item.CouponDto;
 import practice.newbalance.dto.member.DeliveryAddressDto;
 import practice.newbalance.dto.member.MemberDto;
 import practice.newbalance.service.MemberService;
@@ -20,6 +23,11 @@ import practice.newbalance.web.validator.CheckEmailValidator;
 import practice.newbalance.web.validator.CheckUserIdValidator;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -181,12 +189,51 @@ public class MemberController {
      * 마이페이지 쿠폰페이지 이동
      * @return
      */
-    @GetMapping("/my/couponList")
-    public String couponListHome(Model model,
-                                 @AuthenticationPrincipal CustomUserDetail customUserDetail){
+    @GetMapping("/my/couponPage")
+    public String couponListHome(){
         return "member/user/myPage-couponList";
     }
 
+    /**
+     * 마이페이지 쿠폰페이지 이동
+     * @return
+     */
+    @GetMapping("/my/couponList")
+    @ResponseBody
+    public Map<String, Object> couponList(Model model,
+                                 @AuthenticationPrincipal CustomUserDetail customUserDetail,
+                                 @RequestParam(value = "sDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate sDate,
+                                 @RequestParam(value = "period", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate period,
+                                 @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                 @RequestParam(name = "limit", defaultValue = "3") int limit){
+
+        // LocalDate를 LocalDateTime으로 변환
+        LocalDateTime startDateTime = sDate != null ? sDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = period != null ? period.atTime(LocalTime.MAX) : null;
+
+        List<CouponDto> couponDtos = memberService.memberCouponse(customUserDetail.getMember().getId(), startDateTime, endDateTime, offset, limit);
+        long totalCount = memberService.getCouponCount(customUserDetail.getMember().getId(), startDateTime, endDateTime);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        for(CouponDto couponDto : couponDtos) {
+            couponDto.setFormattedSDate(couponDto.getSDate().format(dateFormat) + " " + couponDto.getSDate().toLocalTime().format(timeFormatter));
+            couponDto.setFormattedPeriod(couponDto.getPeriod().format(dateFormat) + " " + couponDto.getPeriod().toLocalTime().format(timeFormatter));
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("couponDtos", couponDtos);
+        response.put("totalCount", totalCount);
+
+        return response;
+    }
+
+    /**
+     * 마이페이지 쿠폰 등록
+     * @param customUserDetail
+     * @param code
+     * @return
+     */
     @PostMapping("/my/couponAdd")
     public ResponseEntity<String> couponAdd(
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
@@ -195,6 +242,9 @@ public class MemberController {
         try {
             String result = memberService.registorCoupon(customUserDetail.getMember().getId(), code);
             return ResponseEntity.ok(result);
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getStatus())
+                    .body(e.getErrorCode().getMsg()); // ErrorDto 활용
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠폰 등록 중 오류가 발생했습니다.");
         }

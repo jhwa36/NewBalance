@@ -33,7 +33,7 @@ public class Coupon extends ModifierEntity {
     @Column(name = "sDate")
     private LocalDateTime sDate;
 
-    @Column(name = "peroid")
+    @Column(name = "period")
     private LocalDateTime period;
 
     @Column(name = "code")
