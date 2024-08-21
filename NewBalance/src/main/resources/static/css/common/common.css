@@ -91,6 +91,7 @@ a {
 .footer .foot_link {
     height: 130px;
     border-bottom: 1px solid #393939;
+    border-top: 1px solid #393939;
 }
 
 .footer .foot_link ul {
