@@ -32,12 +32,11 @@
         function createOrderSelect(){
             let cartList = [];
             let checkList = $("input[id='isOrder']:checked");
-            console.log(checkList);
+
             for(let i = 0; i < checkList.length; i++){
                 cartList.push(checkList[i].value);
             }
-            console.log(checkList);
-            console.log(cartList);
+
             requestOrder(cartList);
         }
 
@@ -55,7 +54,7 @@
                     carts : JSON.stringify(cartList)
                 },
                 success : (response) => {
-                    location.href = "/orders/";
+                    location.href = "/orders/" + response.id;
                 }
             })
         }

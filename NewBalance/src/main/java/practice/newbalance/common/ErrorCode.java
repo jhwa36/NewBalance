@@ -18,7 +18,8 @@ public enum ErrorCode {
     DELIVERED_PRODUCT("DELIVERED_PRODUCT", "배송 완료된 상품은 취소가 불가능합니다."),
 
     //주문관련 에러 코드
-    REQUIRED_SETTING_ADDRESS("REQUIRED_SETTING_ADDRESS", "배송지 설정이 되어있지 않습니다.");
+    REQUIRED_SETTING_ADDRESS("REQUIRED_SETTING_ADDRESS", "배송지 설정이 되어있지 않습니다."),
+    DONT_CREATE_ORDER("DONT_CREATE_ORDER", "상품 주문에 실패하였습니다.");
 
     //401
 

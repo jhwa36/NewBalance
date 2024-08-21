@@ -12,9 +12,11 @@ import practice.newbalance.domain.item.Cart;
 import practice.newbalance.domain.item.Order;
 import practice.newbalance.domain.member.DeliveryAddress;
 import practice.newbalance.domain.member.Member;
+import practice.newbalance.dto.item.CartInfoDto;
 import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CartRepository;
 import practice.newbalance.repository.item.OrderRepository;
+import practice.newbalance.repository.item.query.CustomCartRepository;
 import practice.newbalance.repository.user.DeliveryAddressRepository;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class OrderServiceImpl implements OrderService{
 
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
+    private final CustomCartRepository customCartRepository;
     private final OrderRepository orderRepository;
     private final DeliveryAddressRepository addressRepository;
 
@@ -65,15 +68,15 @@ public class OrderServiceImpl implements OrderService{
 
         return orderId;
 
+    }
 
-//        member.getAddress().stream()
-//                .filter(DeliveryAddress::getDefaultYN)
-//                .forEach(address -> {
-//                    //주문 생성
-//                    Order order = Order.createOrder(member, address, cartList);
-//                    orderRepository.save(order);
-//                });
-//        return ResponseEntity.ok("success");
+    public Order findOrder(Long orderId){
+        return orderRepository.findOrderById(orderId)
+                .orElseThrow(
+                        () -> new CustomException(
+                                HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA
+                        )
+                );
     }
 
     @Transactional
@@ -85,4 +88,13 @@ public class OrderServiceImpl implements OrderService{
         order.cancel();
         return ResponseEntity.ok("success");
     }
+
+    public CartInfoDto getCartInfo(Long cartId){
+        return customCartRepository.getProductInCart(cartId).orElseThrow(
+                () -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA)
+        );
+    }
+
+
+
 }
