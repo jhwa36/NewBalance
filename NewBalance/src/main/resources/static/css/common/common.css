@@ -102,6 +102,7 @@ a {
     float: left;
     width: 300px;
     padding-top: 50px;
+    list-style: none;
 }
 
 .footer .foot_link li a {
@@ -148,6 +149,13 @@ a {
     font-size: 14px;
     line-height: 1;
 }
+.footer .foot_inner .foot_menu .list ul{
+    padding-left: 0px;
+}
+
+.footer .foot_inner .foot_menu .list li{
+    list-style: none;
+}
 
 .footer .foot_inner .foot_menu .list li a {
     display: block;
@@ -159,7 +167,7 @@ a {
 
 .footer .foot_inner .foot_info {
     float: right;
-    width: 600px;
+    width: 450px;
 }
 
 .footer .foot_inner .foot_info .sns {
