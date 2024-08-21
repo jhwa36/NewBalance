@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/config/defaultLayout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/item/orders.css">
+    <style>
+        .coupon{
+            margin : 20px 0;
+            border: solid 0.5px #dbdbdb;
+            width: 1100px;
+        }
+        .couponInfo{
+            padding: 20px;
+            float: left;
+            min-height: 500px;
+            width:850px;
+            box-sizing: border-box;
+        }
+        .priceInfo{
+            padding : 20px;
+            min-height: 500px;
+            /*width: 20%;*/
+            width:216px;
+            float: right;
+            background-color: #dbdbdb;
+            box-sizing: border-box;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            setPrice();
+        }
+        $(document).on("change", "#useCoupon", function(){
+            setPrice();
+        })
+        function setPrice(){
+            console.log("setPrice");
+            let orderPrice = parseInt(document.getElementById("orderPrice").innerText);
+            let deliveryPrice = orderPrice >= 5000 ? 0 : 3000;
+            let discountRate = parseFloat(document.getElementById("useCoupon").value) / 100;
+            let discountPrice = parseInt(orderPrice * discountRate);
+
+            document.getElementById("totalPrice").innerText = String(parseInt((orderPrice + deliveryPrice) - discountPrice));
+            document.getElementById("deliveryPrice").innerText = String(deliveryPrice);
+            document.querySelectorAll(".discountPrice")
+                .forEach(
+                    (d) => {
+                        d.innerText = String(discountPrice)
+                    }
+                )
+        }
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="tt_step">
+        <p><span class="order_flow" id="cart">장바구니</span><span class="order_flow" id="order">주문/결제</span><span class="order_flow" id="complete">주문완료</span></p>
+    </div>
+    <div class="title">
+        <h2>주문/결제</h2>
+    </div>
+    <div class="tbl_count">
+        <h3>주문내역 확인 및 할인적용</h3>
+    </div>
+
+    <div class="tbl_prodInfo">
+        <table class="tbl_basket">
+            <colgroup>
+                <col style="width:640px">
+                <col style="width:180px">
+                <col style="width:160px">
+            </colgroup>
+            <thead>
+                <th scope="col" id="productInfo">상품/옵션 정보</th>
+                <th scope="col" id="quantity">수량</th>
+                <th scope="col" id="price">주문 금액</th>
+            </thead>
+            <tbody>
+                <tr th:each="cart : ${cartList}">
+                    <td>
+                        <div class="prodWrap">
+                            <div class="prodImg"><img src="#" alt="#"></div>
+                            <div class="prodInfo">
+                                <p th:text="${cart.getTitle()}">title</p>
+                                <p><span th:text="${cart.getColor()}">color</span>, <span th:text="${cart.getSize()}">size</span></p>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center"><p th:text="${cart.getCount()}">0</p></td>
+                    <td style="text-align: center"><p th:text="${cart.getPrice()}">150000원</p></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="coupon">
+            <div class="couponInfo">
+                <div>
+                    <p style="border-bottom: solid #dbdbdb 0.5px; padding-bottom: 20px">
+                        <span>주문금액</span> <span id="orderPrice" th:text="${totalPrice}" style="float: right"></span>
+                    </p>
+                </div>
+                <p><span>할인금액</span> <span class="discountPrice" style="float: right">0</span></p>
+                <p style="padding-bottom: 20px;border-bottom: #dbdbdb 0.5px solid">
+                    <span>쿠폰</span>
+                    <select name="useCoupon" id="useCoupon">
+                        <option value="0" selected>선택</option>
+                        <option value="5">5%</option>
+                    </select>
+                    <span class="discountPrice" style="float: right">0</span>
+                </p>
+                <p>
+                    <span>배송료</span>
+                    <span id="deliveryPrice" style="float:right" th:text="${totalPrice >= 30000 ? 0 : 3000}">0원</span>
+                </p>
+            </div>
+            <div class="priceInfo">
+                <p style="font-weight: bold">결제 예정 금액</p>
+                <p style="color: gray">주문금액 + 할인 금액 + 배송료</p>
+                <br><br>
+                <p style="font-weight: bold; font-size: 20px; color: red;"><span id="totalPrice"></span>원</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setPrice();
+</script>
+</body>
+</html>

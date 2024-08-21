@@ -1,11 +1,15 @@
 .container{
     margin-left: 400px;
     margin-right: 400px;
-    min-height: 100%;
+    min-height: 980px;
+    padding-bottom: 280px;
+    width:1100px;
 }
 
-body{
-    height: 1300px;
+html, body{
+    /*height: 1300px;*/
+    width: 100%;
+    height: 100%;
 }
 
 .footer{
@@ -22,7 +26,7 @@ a {
     left: 0;
     top: 0;
     height : 150px;
-    width: 100%;
+    width: 1900px;
     background-color: white;
     margin-top: 0;
 }
@@ -82,8 +86,6 @@ a {
     color : white;
     min-width: 1200px;
     background: #232323;
-    /*transform: translateY(-100%);*/
-    /*height: 200px;*/
 }
 
 .footer .foot_link {

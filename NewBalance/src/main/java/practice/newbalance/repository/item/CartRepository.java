@@ -12,7 +12,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select c from Cart c join fetch c.product where c.id = :cartId")
     Optional<Cart> findById(@Param("cartId") Long cartId);
 
-    @Query("select c from Cart c join fetch c.product")
+    @Query("select c from Cart c join fetch c.product where c.order.id is null")
     List<Cart> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);

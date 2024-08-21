@@ -20,8 +20,43 @@
             size : null
         }
 
-        function createOrder(){
+        function createOrderAll(){
+            let cartList = [];
+            let checkList = $("input[type='checkbox']");
+            $(checkList).each(function () {
+                cartList.push($(this).val());
+            });
+            requestOrder(cartList);
+        }
 
+        function createOrderSelect(){
+            let cartList = [];
+            let checkList = $("input[id='isOrder']:checked");
+
+            for(let i = 0; i < checkList.length; i++){
+                cartList.push(checkList[i].value);
+            }
+
+            requestOrder(cartList);
+        }
+
+        function createOrder(cartId){
+            let cartList = [];
+            cartList.push(cartId);
+            requestOrder(cartList);
+        }
+
+        function requestOrder(cartList){
+            $.ajax({
+                method : "POST",
+                url : "/orders/",
+                data : {
+                    carts : JSON.stringify(cartList)
+                },
+                success : (response) => {
+                    location.href = "/orders/" + response.id;
+                }
+            })
         }
 
         function changeOption(){
@@ -160,7 +195,7 @@
             <tbody>
                 <tr id="cartRow" th:each="cart : ${cartList}">
                     <td style="text-align: center">
-                        <input type="checkbox" id="isOrder">
+                        <input type="checkbox" id="isOrder" th:value="${cart.getId()}">
                     </td>
                     <td>
                         <div class="pr">
@@ -188,13 +223,18 @@
                         <p th:text="${cart.getPrice()}"></p>
                     </td>
                     <td style="text-align: center">
-                        <p><a type="button" href="" id="cart_order_btn" class="cart_btn" th:onclick="|createOrder(${cart.getId()})|">주문하기</a></p><br>
+                        <p><a href="#" id="cart_order_btn" class="cart_btn" th:onclick="|createOrder(${cart.getId()})|">주문하기</a></p><br>
                         <p><a href="#" id="cart_delete_btn" class="cart_btn" th:onclick="|delCartItem(${cart.getId()})|">삭제하기</a></p>
                     </td>
                 </tr>
             </tbody>
 
         </table>
+        <div class="buttonList">
+            <button id="orderAllBtn" th:onclick="|createOrderAll()|">전체 상품 주문하기</button>
+            <button id="orderSelectBtn" th:onclick="|createOrderSelect()|">선택 상품 주문하기</button>
+
+        </div>
     </div>
 
 </div>

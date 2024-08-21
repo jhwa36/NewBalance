@@ -44,6 +44,7 @@ public class Cart {
         Cart cart = new Cart();
         cart.setMember(member);
         cart.saveItem(cart, product, option, price, count);
+        option.removeStock(count);
         return cart;
     }
 
@@ -55,6 +56,23 @@ public class Cart {
     }
 
     public void updateOption(Cart cart, ProductOption option){
+        //이전 옵션의 수량 증가
+        getProductOption().addStock(getCount());
+        //옵션 변경
         cart.setProductOption(option);
+        //변경된 옵션의 수량 감소
+        option.removeStock(getCount());
+    }
+
+    public void updateCount(Cart cart, int count){
+        ProductOption productOption = cart.getProductOption();
+        productOption.addStock(cart.getCount());
+        productOption.removeStock(count);
+        cart.setCount(count);
+        cart.setPrice(cart.getProduct().getPrice() * count);
+    }
+
+    public void cancel(){
+        getProductOption().addStock(getCount());
     }
 }
