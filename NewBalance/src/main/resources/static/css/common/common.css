@@ -73,10 +73,14 @@ a {
     margin-left: 15px;
 }
 .menu{
-    position: absolute;
-    display: inline-block;
-    margin-top:40px;
-    width: 500px;
+    /*position: absolute;*/
+    /*display: inline-block;*/
+    /*margin-top:40px;*/
+    /*width: 100%;*/
+    float: left;
+    margin-left: 10px;
+    max-width: calc(100% - 430px);
+    height: 70px;
 }
 
 .footer{

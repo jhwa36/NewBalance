@@ -416,6 +416,7 @@ $(document).ready(function () {
             window.updateCkEditor.setData('');
         }
         newThumbnails = [];
+        isInitialLoad = true;
     });
 
     $(window).click(function (event) {
@@ -452,6 +453,7 @@ $(document).ready(function () {
             $('#updateThumbnailInput').val('');
             $('#updateThumbnailPreview').empty();
             newThumbnails = [];
+            isInitialLoad = true;
             $('#productUpdateModal').hide();
             productList();
         }
@@ -1608,12 +1610,20 @@ $(document).ready(function () {
                 }
             });
         });
+
     let existingThumbnails = [];
     let newThumbnails = [];
+    let isInitialLoad = true;
+    let existingColorData = []; // 기존 색상 및 사이즈 데이터 저장
+
     // 상품 수정
     function productUpdate(event){
         event.preventDefault();
         const products = $(this).data();
+
+        existingColorData = [];
+        currentCategory = null;
+
         // 달력 위젯 숨기기
         $('#updateProductManufactureDate').focus(function(){
             $('.ui-datepicker-calendar').hide();
@@ -1637,9 +1647,13 @@ $(document).ready(function () {
 
         // callback함수
         getProductOptions(productId, function(productDetails){
+            existingColorData  = productDetails.productDetails; // 기존 데이터 저장
+            // existingColorData  = getColorDataAdd(); // 기존 데이터 저장
 
             // 옵션 바인딩
             bindProductOptions(productDetails);
+
+            // 플래그를 사용하여 초기화 방지
 
             // 카테고리 바인딩
             // 첫 번째 셀렉트박스 변경 이벤트 핸들러
@@ -1654,6 +1668,12 @@ $(document).ready(function () {
                     // 세 번째 셀렉트 박스 로드
                     updateLoadDetailedCategories(products.categorytitle, products.categoryref, function() {
                         $('#updateProductCategorySelect3').val(products.categoryid).prop('disabled', false);
+
+                        // 모든 데이터 로드 완료 후 플래그 해제
+                        isInitialLoad = false;
+
+                        // 현재 카테고리 업데이트
+                        currentCategory = products.categoryid;
                     });
                 });
             });
@@ -1674,7 +1694,7 @@ $(document).ready(function () {
         [...existingThumbnails, ...newThumbnails].forEach(thumbnail => {
             const container = $('<div>').css({ display: 'inline-block', position: 'relative' });
 
-            // 이미지 생성
+            // 이미지 생성 썸네일 미리보기 크기 지정
             const img = $('<img>').attr('src', thumbnail.thumbnailUrl).css({ width: '100px', height: '100px', margin: '5px' });
             container.append(img);
 
@@ -1884,16 +1904,79 @@ $(document).ready(function () {
 
     // 색상 및 사이즈 입력 그룹 추가
     $('#productEditModal .addColorBtn').click(function () {
-        addColorGroup('#productEditModal .colorContainer');
+        const selectCategory = $('#productCategorySelect2').val();
+        const containerSelector = '#productEditModal .colorContainer';
+
+        if(selectCategory === '2') {
+            addColorGroup(containerSelector, ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290']);
+        } else if(selectCategory === '3') {
+            addColorGroup(containerSelector, ['S', 'M', 'L', 'XL', 'XXL']);
+        }
+    });
+
+    $('#productCategorySelect2').change(function(){
+       const selectCategory = $(this).val();
+       const containerSelector = '#productEditModal .colorContainer';
+
+       $(containerSelector).empty();
+
+       if(selectCategory === '2') {
+           addColorGroup(containerSelector, ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290']);
+       } else if(selectCategory === '3') {
+           addColorGroup(containerSelector, ['S', 'M', 'L', 'XL', 'XXL']);
+       }
     });
 
     $('#productUpdateModal .addColorBtn').click(function () {
-        addColorGroup('#productUpdateModal .colorContainer');
+        const selectCategoryRef = $('#updateProductCategorySelect2').val();
+        const containerSelector = '#productUpdateModal .colorContainer';
+        const sizes = selectCategoryRef === '2'
+             ? ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290']
+             : ['S', 'M', 'L', 'XL', 'XXL'];
+
+        addColorGroup(containerSelector, sizes);
+    });
+
+    let currentCategory = null; // 현재 선택된 카테고리 저장
+
+    $('#updateProductCategorySelect2').change(function(event){
+       event.preventDefault();
+       const containerSelector = '#productUpdateModal .colorContainer';
+
+       // 초기화만 수행
+        if (!isInitialLoad) {
+            $(containerSelector).empty();  // 컨테이너 초기화
+
+            // 3번 셀렉트 박스를 초기화
+            $('#updateProductCategorySelect3').val('').trigger('change');
+        }
+    });
+
+
+// #updateProductCategorySelect3 변경 시 옵션 바인딩 수행
+    $('#updateProductCategorySelect3').change(function(event) {
+        event.preventDefault();
+        const selectCategoryId = $(this).val(); // 선택된 카테고리 ID
+        const containerSelector = '#productUpdateModal .colorContainer';
+
+        if (!isInitialLoad && selectCategoryId) {
+            // #updateProductCategorySelect3 값이 변경된 경우에만 바인딩 수행
+            if (String(currentCategory) === String(selectCategoryId)) {
+
+                bindProductOptions({
+                    productDetails: existingColorData
+                });
+            } else {
+                $(containerSelector).empty();  // 컨테이너 초기화
+            }
+            // 현재 카테고리 업데이트
+            currentCategory = selectCategoryId;
+        }
     });
 
     let colorCount = 0; // 전역으로 선언하여 초기화
 
-    function addColorGroup(containerSelector) {
+    function addColorGroup(containerSelector, sizes) {
 
         const colorGroup = $('<div>').addClass('color-group').attr('data-color-group', colorCount);
 
@@ -1905,7 +1988,6 @@ $(document).ready(function () {
             required: true
         });
 
-        const sizes = ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290'];
         sizes.forEach(size => {
             const sizeRow = $('<div>').addClass('size-row');
 
@@ -1938,6 +2020,7 @@ $(document).ready(function () {
         colorCount++;
     }
 
+    // 바인딩 데이터 가져오기
     function getColorDataAdd() {
         const colors = [];
         // 색상 및 사이즈 데이터
@@ -2006,6 +2089,12 @@ $(document).ready(function () {
                     });
 
                     const sizes = ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290'];
+
+                    const selectCategory = $('#updateProductCategorySelect2').val();
+                    const size = selectCategory === '2'
+                        ? ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290']
+                        :  ['S', 'M', 'L', 'XL', 'XXL'];
+
                     sizes.forEach(size =>{
                         const option = options.find(option => option.size === size);
                         const sizeRow = $('<div>').addClass('size-row');

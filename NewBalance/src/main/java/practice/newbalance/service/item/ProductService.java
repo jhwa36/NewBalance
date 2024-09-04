@@ -32,4 +32,6 @@ public interface ProductService {
     List<Cart> findCartAll(Long memberId);
     void updateCartOption(Long cartId, String size, String color);
     void updateCartCount(Long cartId, int count);
+
+    List<Product> getProductsByCategoryId(Long categoryId);
 }

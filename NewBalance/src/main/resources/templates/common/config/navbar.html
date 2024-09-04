@@ -2,6 +2,200 @@
     <html xmlns:th="http://www.thymeleaf.org"
           xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
           th:fragment="header">
+<head>
+    <style>
+        /* 메뉴바 기본 스타일 */
+        .menu {
+            position: relative;
+        }
+
+        .menu > ul {
+            display: flex; /* 가로로 배치 */
+            justify-content: space-between; /* 항목 간에 여유 공간을 균등하게 배분 */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .menu > ul > li {
+            position: relative;
+            flex-grow: 1; /* 메뉴 항목을 균등하게 분배 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
+
+        /* 기본 서브메뉴 컨테이너 스타일 */
+        .subMenuContainer {
+            display: none; /* 기본적으로 숨김 */
+            position: absolute;
+            left: 0;
+            background: white;
+            z-index: 1000;
+            padding: 0; /* 패딩 제거 */
+            box-sizing: border-box;
+            width: 100vw; /* 화면 너비 100% */
+            height: 50vh; /* 화면 높이의 50% */
+            max-height: 50vh; /* 화면 높이의 50% */
+            overflow: hidden; /* 스크롤 숨김 */
+            display: flex;
+            flex-direction: row; /* 내부 요소들을 가로로 배치 */
+            flex-wrap: nowrap; /* 줄바꿈 방지 */
+            margin-top: 0; /* 메뉴 항목과 서브메뉴 간의 거리 제거 */
+            top: 100px; /* 기본 위치 설정 */
+            transition: top 0.3s ease; /* 위치 변화에 대한 부드러운 전환 추가 */
+        }
+        /* 메뉴 항목 위로 마우스 오버 시 서브메뉴 표시 */
+        .menu > ul > li:hover .subMenuContainer {
+            display: flex;
+            top: 80px; /* 호버 시 위치 조정 */
+        }
+
+        /* 서브메뉴 그룹 */
+        .submenu-group {
+            /*flex: 1 1 150px; !* 그룹의 기본 너비 설정 및 자동 크기 조절 *!*/
+            /*margin-right: 10px; !* 그룹 간 간격 설정 *!*/
+        }
+        /* 서브메뉴 그룹 */
+        .submenu-group {
+            float: left; /* 왼쪽 정렬 */
+            width: 160px; /* 너비 설정 */
+            min-height: 350px; /* 최소 높이 설정 */
+            margin-right: 20px; /* 그룹 간 간격 설정 */
+            box-sizing: border-box; /* 패딩과 테두리를 포함하여 너비와 높이를 설정 */
+        }
+        /* 서브메뉴 그룹 제목 */
+        .submenu-group strong {
+            display: block;
+            font-size: 17px; /* 글씨 크기 줄이기 */
+            font-weight: bold;
+            margin-bottom: 10px; /* 제목과 리스트 간 간격 */
+            margin-top: 30px; /* 제목과 상단 간격 조정 (원하는 만큼 조정) */
+        }
+
+        /* 서브메뉴 그룹의 리스트 */
+        .submenu-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #141414;
+        }
+
+        /* 서브메뉴 리스트 아이템 */
+        .submenu-group ul li {
+            margin-bottom: 5px;
+        }
+
+        /* 서브메뉴 리스트 링크 */
+        .submenu-group ul li a {
+            text-decoration: none;
+            color: #555;
+            font-size: 15px; /* 링크 글씨 크기 줄이기 */
+        }
+
+        /* 메뉴 항목 위로 마우스 오버 시 서브메뉴 표시 */
+        .menu > ul > li:hover .subMenuContainer,
+        .menu > ul > li:hover .subMenuContainer:hover {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+            let subMenuContainer = $('<div>').addClass('subMenuContainer').appendTo('.menu');
+
+            $('.menu > ul > li').on('mouseenter',function(){
+                const title = $(this).data('title').toUpperCase();
+                const $this = $(this);
+
+                $.ajax({
+                    url: '/categories',
+                    type: 'GET',
+                    data: { title: title },
+                    success: function(response) {
+                        renderSubMenu(subMenuContainer, response);
+                        subMenuContainer.show();
+
+                        // 메뉴 항목의 위치를 기준으로 서브메뉴 위치 조정
+                        const height = $this.outerHeight();
+                        subMenuContainer.css({
+                            top: (height + 15) + 'px', // 메뉴 항목의 아래쪽에 위치
+                            left: '0px', // 메뉴 항목의 왼쪽에 맞춰서
+                            width: '100vw', // 화면 너비 100%
+                            height: '50vh', // 화면 높이의 50%
+                            padding: '0 60px'
+                        });
+                    },
+                    error: function(){
+                        alert('failed');
+                    }
+                });
+            });
+
+            // 서브메뉴와 메뉴 항목에서 마우스가 올라갔을 때 서브메뉴를 보이게 함
+            $('.menu .subMenuContainer').on('mouseenter', function(){
+               subMenuContainer.stop(true, true).show();// 애니메이션을 중지하고 서브메뉴를 보여줌
+            }).on('mouseleave', function(){
+                // 메뉴와 서브메뉴 둘 다 벗어났을 때 서브메뉴를 숨깁니다.
+                if(!$('.menu').is(':hover') && !subMenuContainer.is(':hover')) {
+                    subMenuContainer.stop(true, true).hide(); // 애니메이션을 중지하고 서브메뉴를 숨김
+                }
+            });
+            // 서브메뉴를 렌더링하는 함수
+            function renderSubMenu(subMenuContainer, categories) {
+                subMenuContainer.empty(); // 이전의 서브메뉴 내용을 비움
+
+                // 카테고리 매핑 정의
+                const categoryMappings = {
+                    1: 'Featured',
+                    2: '신발',
+                    3: '의류',
+                    4: '용품',
+                    5: '언더웨어',
+                    6: '스포츠',
+                    7: '연중판매'
+                };
+                // 카테고리 그룹을 저장할 객체
+                const refGroups = {};
+
+                // 각 배열을 순회하여 카테고리 데이터를 처리
+                $.each(categories, function(index, stepArray) {
+                    $.each(stepArray, function(index, category) {
+                        const ref = category.ref; // 카테고리 참조 번호
+                        const categoryName = category.name; // 카테고리 이름
+                        const categoryId = category.id; // 카테고리 id
+
+                        // 참조 번호를 사용하여 카테고리 그룹에 추가
+                        if (!refGroups[ref]) {
+                            refGroups[ref] = { title : categoryMappings[ref] || 'Unknown', items : []}
+
+                        }
+                        refGroups[ref].items.push({ name : categoryName, id : categoryId});
+                    });
+                });
+
+
+                // 참조 그룹을 기반으로 서브메뉴 생성
+                $.each(refGroups, function(ref, group) {
+                    const groupDiv = $('<div>').addClass('submenu-group'); // 새로운 서브메뉴 그룹 생성
+
+                    // 그룹 제목을 가져오기
+                    const groupTitle = $('<strong>').text(group.title);
+                    const list = $('<ul>'); // 리스트 생성
+
+                    // 각 카테고리 항목을 리스트 아이템으로 추가
+                    $.each(group.items, function(index, item) {
+                        const listItem = $('<li>').append(
+                            $('<a href="/categories/' + item.id + '">').text(item.name)); // item.id와 item.name을 사용
+                        list.append(listItem);
+                    });
+
+                    groupDiv.append(groupTitle).append(list); // 그룹 제목과 리스트를 그룹에 추가
+                    subMenuContainer.append(groupDiv); // 서브메뉴 컨테이너에 그룹 추가
+                });
+            }
+        });
+
+    </script>
+</head>
         <div class="nav" th:fragment="headerFragment">
             <div class="nav-inner">
                 <ul>
@@ -12,24 +206,30 @@
                 </ul>
             </div>
             <div class="navbar">
-                <div class="menu">
-                    <ul>
-                        <li><a href="/">NB</a></li>
-                        <li><a href="">Men</a></li>
-                        <li><a href="">Women</a></li>
-                        <li><a href="" style="margin-left: 60px;">Kids</a></li>
-                    </ul>
-                </div>
-                <div class="gnb">
-                    <ul>
-                        <li><a href="/my/cart">장바구니</a></li>
-                        <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin-page">관리자페이지</a></li>
-                        <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/members/logout" sec:authorize="isAuthenticated()">로그아웃</a></li>
-                        <li sec:authorize="hasRole('ROLE_USER')"><a href="/my">마이페이지</a></li>
-                        <li sec:authorize="isAnonymous()"><a href="/members/login">로그인</a> | <a href="/members/join">회원가입</a></li>
-                        <li><a href="/notice">검색</a></li>
-                    </ul>
+                <div class="inner">
+                    <div class="menu">
+                        <ul>
+                            <li><a href="/">NB</a></li>
+                            <li class="menu-item" data-title="Men"><a href="#">Men</a></li>
+                            <li class="menu-item" data-title="Women"><a href="#">Women</a></li>
+                            <li class="menu-item" data-title="Kids"><a href="#" style="margin-left: 60px;">Kids</a></li>
+                            <!-- 서브메뉴 컨테이너 -->
+                        </ul>
+                    </div>
+                    <div class="gnb">
+                        <ul>
+                            <li><a href="/my/cart">장바구니</a></li>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin-page">관리자페이지</a></li>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/members/logout" sec:authorize="isAuthenticated()">로그아웃</a></li>
+                            <li sec:authorize="hasRole('ROLE_USER')"><a href="/my">마이페이지</a></li>
+                            <li sec:authorize="isAnonymous()"><a href="/members/login">로그인</a> | <a href="/members/join">회원가입</a></li>
+                            <li><a href="">검색</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+
+
+
 </html>

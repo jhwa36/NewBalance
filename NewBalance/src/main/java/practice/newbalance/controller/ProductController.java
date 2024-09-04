@@ -2,7 +2,6 @@ package practice.newbalance.controller;
 
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,14 +13,13 @@ import practice.newbalance.domain.item.Product;
 import practice.newbalance.dto.item.CategoryDto;
 import practice.newbalance.dto.item.ProductDto;
 import practice.newbalance.service.item.CategoryService;
-import practice.newbalance.dto.item.ProductOptionDto;
 import practice.newbalance.service.item.ProductService;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.springframework.ui.Model;
+
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.item.Cart;
 import practice.newbalance.dto.item.CartDto;
@@ -258,4 +256,18 @@ public class ProductController {
         productService.delAllCart(customUserDetail.getMember().getId());
         return ResponseEntity.ok("success");
     }
+
+    /**
+     * 상품 카테고리 상세 페이지 이동
+     * @param categoryId
+     * @param model
+     * @return
+     */
+    @GetMapping("/categories/{categoryId}")
+    public String productList(@PathVariable("categoryId")Long categoryId, Model model){
+        List<Product> products = productService.getProductsByCategoryId(categoryId);
+        model.addAttribute("products", products);
+        return "/item/productsList";
+    }
+
 }

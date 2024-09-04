@@ -364,5 +364,11 @@ public class ProductServiceImpl implements ProductService{
         );
         cart.updateCount(cart, count);
     }
+
+    // 상품 카테고리 id 목록 조회
+    @Override
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId);
+    }
 }
 
