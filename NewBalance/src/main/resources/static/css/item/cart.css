@@ -68,10 +68,9 @@ tr > td{
     background-color: red;
     color:white;
 }
-#cart_item_img{
+#cart_item_img > img{
     width: 140px;
     height: 140px;
-    background-color: #dbdbdb;
     margin-right: 50px;
 }
 

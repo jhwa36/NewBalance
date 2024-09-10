@@ -200,7 +200,7 @@
                     <td>
                         <div class="pr">
                             <div id="cart_item_img" class="cart_content">
-                                <img src="#" alt="#">
+                                <img src="#" alt="#" th:src="${cart.getProduct().getThumbnailUrl().get(0).getThumbnailUrl()}">
                             </div>
                             <div id="cart_item_content" class="cart_content">
                                 <a href="" th:text="${cart.getProduct().getTitle()}"></a>
