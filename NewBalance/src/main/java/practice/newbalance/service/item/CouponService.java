@@ -10,6 +10,7 @@ public interface CouponService {
 
     // 쿠폰 목록
     List<CouponDto> findCouponAll(int offset, int limit);
+    List<CouponDto> findCouponInUseList(Long memberId);
 
     // 등록된 쿠폰의 수
     long getCouponCount();

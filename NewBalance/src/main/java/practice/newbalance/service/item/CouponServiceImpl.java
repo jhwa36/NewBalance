@@ -30,6 +30,16 @@ public class CouponServiceImpl implements CouponService {
         return customCouponRepository.findCouponAll(offset, limit);
     }
 
+    /**
+     * 회원의 사용가능한 쿠폰 모두 조회
+     * @param memberId
+     * @return List<CouponDto>
+     */
+    @Override
+    public List<CouponDto> findCouponInUseList(Long memberId) {
+        return customCouponRepository.findCouponInUseList(memberId);
+    }
+
     @Override
     public long getCouponCount() {
         return couponRepository.count();
