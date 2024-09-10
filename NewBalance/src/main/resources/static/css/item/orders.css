@@ -36,11 +36,8 @@
 
 .prodImg {
     margin-right: 20px;
-    background-color: #dbdbdb;
     display: inline-block;
     float: left;
-    height: 140px;
-    width: 120px;
 }
 .prodWrap{
 
@@ -90,6 +87,89 @@
     border-bottom : solid #dbdbdb;
     padding-bottom: 20px;
 }
+.deliveryAddress{
+    margin-top: 500px
+}
+.addressTitle{
+    border-bottom: solid #dbdbdb;
+}
 colgroup {
     display: table-column-group;
+}
+.row > .label{
+    display: inline-block;
+    float: left;
+    width: 100px;
+    margin: 0 20px;
+    padding: 10px 0 0 20px;
+}
+.row{
+    margin: 40px 0;
+}
+.input > input, select{
+    padding: 10px;
+}
+#addr{
+    width: 515px;
+}
+.button{
+    text-align: center;
+}
+#submitBtn{
+    color:white;
+    background-color: red;
+    padding : 20px 30px;
+    margin : 20px;
+    border: none;
+    font-size: 20px;
+    font-weight: 400;
+}
+#resetBtn{
+    border: solid 1px;
+    padding : 20px 30px;
+    margin: 20px;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+#addrSelectBtn{
+    padding: 10px 20px;
+}
+
+#popup{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modalWrap{
+    position: absolute;
+    background-color: #ffffff;
+    width: 500px;
+    padding: 50px;
+}
+#popup.hidden{
+    display: none;
+}
+.addr-row{
+    margin-top:20px;
+}
+
+.modalButton {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#addAddressBtn {
+    padding: 20px 18px;
+    background-color: red;
+    color: white;
+    margin-top: 20px;
+    border: 0;
 }
