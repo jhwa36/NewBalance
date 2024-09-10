@@ -11,7 +11,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(
             "select o from Order o " +
-            "join fetch o.deliveryAddress " +
+            "left outer join fetch o.deliveryAddress " +
             "join fetch o.member " +
             "join fetch o.cartList " +
             "where o.id = :orderId"

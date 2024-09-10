@@ -51,6 +51,32 @@
     margin-left : 40px;
 }
 
+.coupon{
+    margin : 20px 0;
+    border: solid 0.5px #dbdbdb;
+    width: 1100px;
+}
+.couponInfo{
+    padding: 20px;
+    float: left;
+    min-height: 500px;
+    width:884px;
+    box-sizing: border-box;
+    border:solid 1px;
+}
+.priceInfo{
+    padding : 20px;
+    min-height: 500px;
+    width:216px;
+    float: right;
+    background-color: #dbdbdb;
+    box-sizing: border-box;
+}
+.prodImg img{
+    width: 140px;
+    height: 120px;
+    margin-right: 50px;
+}
 #productInfo{
     border-bottom : solid #dbdbdb;
     padding-bottom: 20px;
