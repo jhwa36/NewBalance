@@ -27,4 +27,18 @@ public class DeliveryAddressDto {
 
     private Boolean defaultYN;
 
+    public DeliveryAddress toEntity(){
+
+        return DeliveryAddress.builder()
+                .id(id)
+                .recipient(recipient)
+                .recipientNumber(recipientNumber)
+                .zipCode(zipCode)
+                .destination(destination)
+                .address(address)
+                .detailAddress(detailAddress)
+                .defaultYN(defaultYN)
+                .build();
+    }
+
 }
