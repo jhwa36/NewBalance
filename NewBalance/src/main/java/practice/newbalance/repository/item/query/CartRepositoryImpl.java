@@ -10,6 +10,7 @@ import java.util.Optional;
 import static practice.newbalance.domain.item.QCart.cart;
 import static practice.newbalance.domain.item.QProduct.product;
 import static practice.newbalance.domain.item.QProductOption.productOption;
+import static practice.newbalance.domain.item.QThumbnail.thumbnail;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +29,8 @@ public class CartRepositoryImpl implements CustomCartRepository{
                                 productOption.color,
                                 productOption.size,
                                 cart.count,
-                                cart.price
+                                cart.price,
+                                thumbnail.thumbnailUrl
                         )
                 )
                 .from(cart)
@@ -36,6 +38,8 @@ public class CartRepositoryImpl implements CustomCartRepository{
                 .on(cart.product.id.eq(product.id))
                 .innerJoin(productOption)
                 .on(cart.productOption.id.eq(productOption.id))
+                        .innerJoin(thumbnail)
+                        .on(thumbnail.product.id.eq(product.id))
                 .where(cart.id.eq(cartId))
                 .fetchOne());
     }

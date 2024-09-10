@@ -28,7 +28,11 @@ public enum ErrorCode {
 
     //주문관련 에러 코드
     REQUIRED_SETTING_ADDRESS("REQUIRED_SETTING_ADDRESS", "배송지 설정이 되어있지 않습니다."),
-    DONT_CREATE_ORDER("DONT_CREATE_ORDER", "상품 주문에 실패하였습니다.");
+    DONT_CREATE_ORDER("DONT_CREATE_ORDER", "상품 주문에 실패하였습니다."),
+    ERROR_CHANGE_ORDER_STATUS("ERROR_CHANGE_ORDER_STATUS", "주문 상태 변경 실패"),
+
+    //JSON 파싱 관련 에러코드
+    JSON_PARSING_ERROR("JSON_PARSING_ERROR", "JSON 파싱 에러");
 
     //401
 

@@ -164,7 +164,8 @@ public class MemberController {
             @AuthenticationPrincipal CustomUserDetail customUserDetail,
             DeliveryAddressDto dto
     ){
-        return memberService.saveAddress(customUserDetail.getMember().getId(), dto);
+        memberService.saveAddress(customUserDetail.getMember().getId(), dto);
+        return ResponseEntity.ok("success");
     }
 
     @PutMapping("/my/delivery-addr/{addrId}")

@@ -115,7 +115,7 @@ public class MemberService {
      * @return ResponseEntity<String>
      */
     @Transactional
-    public ResponseEntity<String> saveAddress(Long id, DeliveryAddressDto dto){
+    public Long saveAddress(Long id, DeliveryAddressDto dto){
         DeliveryAddress deliveryAddress = new DeliveryAddress();
         deliveryAddress.setRecipient(dto.getRecipient());
         deliveryAddress.setDestination(dto.getDestination());
@@ -130,7 +130,7 @@ public class MemberService {
 
         deliveryAddressRepository.save(deliveryAddress);
 
-        return ResponseEntity.ok("success");
+        return deliveryAddress.getId();
     }
 
     /**

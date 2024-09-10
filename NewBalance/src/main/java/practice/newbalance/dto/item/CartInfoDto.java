@@ -12,4 +12,5 @@ public class CartInfoDto {
     private String size;
     private int count;
     private int price;
+    private String thumbnailURL;
 }

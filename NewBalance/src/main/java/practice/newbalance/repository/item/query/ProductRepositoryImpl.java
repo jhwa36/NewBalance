@@ -69,6 +69,7 @@ public class ProductRepositoryImpl implements CustomProductRepository{
                                 Projections.list(
                                         Projections.constructor(
                                                 ProductOptionDtoDetails.class,
+                                                productOption.id,
                                                 productOption.size,
                                                 productOption.quantity
                                         )

@@ -45,6 +45,18 @@ public class CouponDto {
         this.quantity = quantity;
     }
 
+    @QueryProjection
+    public CouponDto(Long id, String benefit, String title, LocalDateTime sDate, LocalDateTime period,
+                     String code, CouponEnum status){
+        this.id = id;
+        this.benefit = benefit;
+        this.title = title;
+        this.sDate = sDate;
+        this.period = period;
+        this.code = code;
+        this.status = status;
+    }
+
     public Coupon toEntity(){
         Coupon coupon = Coupon.builder()
                 .id(id)

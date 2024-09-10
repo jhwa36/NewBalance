@@ -1,0 +1,18 @@
+.container{
+    margin-top: 200px;
+}
+.container > .title {
+    margin-top : 50px;
+}
+.tt_step{
+    float:right;
+}
+.tt_step > p > span{
+    margin-right : 20px;
+}
+#complete{
+    color : black;
+    border-bottom: black solid;
+    padding-bottom: 10px;
+    font-weight : bold;
+}

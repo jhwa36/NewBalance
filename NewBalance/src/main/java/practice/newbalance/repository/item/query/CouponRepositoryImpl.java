@@ -46,6 +46,27 @@ public class CouponRepositoryImpl implements CustomCouponRepository {
     }
 
     @Override
+    public List<CouponDto> findCouponInUseList(Long memberId) {
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                            CouponDto.class,
+                            coupon.id,
+                            coupon.benefit,
+                            coupon.title,
+                            coupon.sDate,
+                            coupon.period,
+                            coupon.code,
+                            coupon.status
+                        )
+                )
+                .from(coupon)
+                .where(coupon.member.id.eq(memberId)
+                        .and(coupon.status.eq(CouponEnum.USED)))
+                .fetch();
+    }
+
+    @Override
     public List<CouponDto> findCouponsByCriteria(Long memberId, LocalDateTime startDate, LocalDateTime endDate, int offset, int limit) {
         JPAQuery<?> query = queryFactory.select(Projections.fields(CouponDto.class,
                 coupon.id.as("id"),
