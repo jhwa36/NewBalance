@@ -36,7 +36,6 @@
             height: 50vh; /* 화면 높이의 50% */
             max-height: 50vh; /* 화면 높이의 50% */
             overflow: hidden; /* 스크롤 숨김 */
-            display: flex;
             flex-direction: row; /* 내부 요소들을 가로로 배치 */
             flex-wrap: nowrap; /* 줄바꿈 방지 */
             margin-top: 0; /* 메뉴 항목과 서브메뉴 간의 거리 제거 */
@@ -100,7 +99,8 @@
     </style>
     <script>
         $(document).ready(function(){
-            let subMenuContainer = $('<div>').addClass('subMenuContainer').appendTo('.menu');
+            let subMenuContainer = $(".subMenuContainer");
+
 
             $('.menu > ul > li').on('mouseenter',function(){
                 const title = $(this).data('title').toUpperCase();
@@ -214,6 +214,7 @@
                             <li class="menu-item" data-title="Women"><a href="#">Women</a></li>
                             <li class="menu-item" data-title="Kids"><a href="#" style="margin-left: 60px;">Kids</a></li>
                             <!-- 서브메뉴 컨테이너 -->
+                            <div class="subMenuContainer"></div>
                         </ul>
                     </div>
                     <div class="gnb">
