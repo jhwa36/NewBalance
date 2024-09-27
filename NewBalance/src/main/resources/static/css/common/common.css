@@ -1,9 +1,15 @@
 .container{
-    margin-left: 400px;
-    margin-right: 400px;
+    padding-left: 400px;
+    padding-right: 400px;
     min-height: 980px;
     padding-bottom: 280px;
     width:1100px;
+    background-color: rgba(0, 0, 0, 0);
+    /*transition : 1s*/
+}
+
+.showSubMenu{
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 html, body{
@@ -272,4 +278,9 @@ span.blind {
     padding-left: 0;
 }
 
+.recentSearches{
+    width : 670px;
+    height : 250px;
+    background-color: yellow;
+}
 
