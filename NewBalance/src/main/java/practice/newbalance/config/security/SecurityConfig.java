@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/members/**", "/faqs/**","/notice/**","/notice"
-                                ,"/api/**", "/css/**", "common/config/**", "/products/**", "/image/**", "/test/**", "/categories/**")
+                                ,"/api/**", "/css/**", "common/config/**", "/products/**", "/image/**", "/test/**", "/categories/**", "/search/**")
                         .permitAll() //해당 경로는 인증 없이 접근 가능
                         .requestMatchers("/admin","/admin-page","/notice/notice-form","/notice/notice-detail",
                                 "/notice/edit-form","/admin/faqs", "/admin/coupon")

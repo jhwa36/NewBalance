@@ -218,8 +218,14 @@
                 let searchDiv = document.createElement("div");
                 searchDiv.id = "searchDiv";
 
+                let form = document.createElement("form");
+                form.setAttribute("charset", "UTF-8");
+                form.setAttribute("method", "GET");
+                form.setAttribute("action", "/search");
+
                 let select = document.createElement("select");
                 select.id = "option";
+                select.name = "option";
                 let option = document.createElement("option");
 
                 select.style.padding = "10px 20px";
@@ -231,8 +237,7 @@
                     option.text = o;
                     select.add(option);
                 }
-
-                searchDiv.appendChild(select);
+                form.appendChild(select);
 
                 let input = document.createElement("input");
                 input.name = "keyword";
@@ -242,11 +247,10 @@
                 input.style.margin = "20px 0";
                 input.style.padding = "10px 20px";
 
-                searchDiv.appendChild(input);
+                form.appendChild(input);
 
                 let button = document.createElement("button");
                 button.innerText = "검색";
-                button.addEventListener("click", searchProduct);
 
                 button.style.margin = "20px";
                 button.style.padding = "10px 20px";
@@ -254,11 +258,12 @@
                 button.style.color = "white";
                 button.style.border = "none";
 
-                searchDiv.appendChild(button);
+                form.appendChild(button);
 
                 searchDiv.style.display = "block";
                 searchDiv.style.marginTop = "50px";
 
+                searchDiv.appendChild(form);
                 searchWrap.append(searchDiv);
 
                 //추천 검색 키워드 div 생성
