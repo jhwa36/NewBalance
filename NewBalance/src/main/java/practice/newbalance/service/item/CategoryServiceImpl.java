@@ -96,4 +96,13 @@ public class CategoryServiceImpl implements CategoryService{
                 .map(Category::toDto)
                 .collect(Collectors.groupingBy(CategoryDto::getRef));
     }
+
+    @Override
+    public List<CategoryDto> findByTitleAndRef(CategoryEnum title, Integer categoryRef) {
+        List<Category> categoryNames = categoryRepository.findByTitleAndRef(title, categoryRef);
+        return categoryNames.stream()
+                .map(Category::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

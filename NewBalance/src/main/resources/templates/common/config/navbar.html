@@ -96,47 +96,87 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .submenu-active {
+            background-color: #666666; /* 서브메뉴가 보일 때 배경색 */
+        }
     </style>
     <script>
         $(document).ready(function(){
             let subMenuContainer = $(".subMenuContainer");
 
 
-            $('.menu > ul > li').on('mouseenter',function(){
+            $('.menu > ul > li, .gnb > ul > li').on('mouseenter',function(){
                 const title = $(this).data('title').toUpperCase();
                 const $this = $(this);
 
-                $.ajax({
-                    url: '/categories',
-                    type: 'GET',
-                    data: { title: title },
-                    success: function(response) {
-                        renderSubMenu(subMenuContainer, response);
-                        subMenuContainer.show();
 
-                        // 메뉴 항목의 위치를 기준으로 서브메뉴 위치 조정
-                        const height = $this.outerHeight();
-                        subMenuContainer.css({
-                            top: (height + 15) + 'px', // 메뉴 항목의 아래쪽에 위치
-                            left: '0px', // 메뉴 항목의 왼쪽에 맞춰서
-                            width: '100vw', // 화면 너비 100%
-                            height: '50vh', // 화면 높이의 50%
-                            padding: '0 60px'
-                        });
-                    },
-                    error: function(){
-                        alert('failed');
-                    }
-                });
+                $('body').addClass('submenu-active'); // 서브메뉴가 나타나면 배경색 변경
+
+                if(title === 'SEARCH') {
+                    subMenuContainer.html(
+                        `<div class="search-form">
+                            <select>
+                                <option value="Men">Men</option>
+                                <option value="Women">Women</option>
+                                <option value="Kids">Kids</option>
+                            </select>
+                            <input type="text" placeholder="검색어를 입력하세요"/>
+                            <button type="submit">검색</button>
+                        </div>
+                    `);
+                    subMenuContainer.show();
+
+                    // 메뉴 항목 위치에 맞게 서브메뉴 위치 조정
+                    const height = $this.outerHeight();
+                    subMenuContainer.css({
+                        top: (height + 30) + 'px',
+                        left: '0px',
+                        width: '100vw',
+                        height: '50vh',
+                        padding: '0 70px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }).show();
+                } else {
+                    $.ajax({
+                        url: '/categories',
+                        type: 'GET',
+                        data: { title: title },
+                        success: function(response) {
+                            renderSubMenu(subMenuContainer, response);
+                            subMenuContainer.show();
+
+                            // 메뉴 항목의 위치를 기준으로 서브메뉴 위치 조정
+                            const height = $this.outerHeight();
+                            subMenuContainer.css({
+                                top: (height + 15) + 'px', // 메뉴 항목의 아래쪽에 위치
+                                left: '0px', // 메뉴 항목의 왼쪽에 맞춰서
+                                width: '100vw', // 화면 너비 100%
+                                height: '50vh', // 화면 높이의 50%
+                                padding: '0 60px',
+                                display: 'none',
+                                justifyContent: 'flex-start',
+                                alignItems: 'flex-start',
+                            }).show();
+                        },
+                        error: function(){
+                            alert('failed');
+                        }
+                    });
+                }
             });
 
             // 서브메뉴와 메뉴 항목에서 마우스가 올라갔을 때 서브메뉴를 보이게 함
-            $('.menu .subMenuContainer').on('mouseenter', function(){
+            $('.menu').on('mouseenter',  '.subMenuContainer', function(){
                subMenuContainer.stop(true, true).show();// 애니메이션을 중지하고 서브메뉴를 보여줌
-            }).on('mouseleave', function(){
+            }).on('mouseleave', '.subMenuContainer', function(){
                 // 메뉴와 서브메뉴 둘 다 벗어났을 때 서브메뉴를 숨깁니다.
                 if(!$('.menu').is(':hover') && !subMenuContainer.is(':hover')) {
                     subMenuContainer.stop(true, true).hide(); // 애니메이션을 중지하고 서브메뉴를 숨김
+                    $('body').removeClass('submenu-active'); // 서브메뉴가 사라지면 배경색 원래대로
+
                 }
             });
             // 서브메뉴를 렌더링하는 함수
@@ -224,7 +264,7 @@
                             <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/members/logout" sec:authorize="isAuthenticated()">로그아웃</a></li>
                             <li sec:authorize="hasRole('ROLE_USER')"><a href="/my">마이페이지</a></li>
                             <li sec:authorize="isAnonymous()"><a href="/members/login">로그인</a> | <a href="/members/join">회원가입</a></li>
-                            <li><a href="">검색</a></li>
+                            <li class="menu-item" data-title="Search"><a href="#">검색</a></li>
                         </ul>
                     </div>
                 </div>

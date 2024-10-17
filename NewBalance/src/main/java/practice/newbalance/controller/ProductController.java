@@ -2,6 +2,8 @@ package practice.newbalance.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,20 +11,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import practice.newbalance.domain.item.CategoryEnum;
 import practice.newbalance.domain.item.Product;
-import practice.newbalance.dto.item.CategoryDto;
-import practice.newbalance.dto.item.ProductDto;
+import practice.newbalance.domain.item.ProductOption;
+import practice.newbalance.dto.item.*;
 import practice.newbalance.service.item.CategoryService;
 import practice.newbalance.service.item.ProductService;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.item.Cart;
-import practice.newbalance.dto.item.CartDto;
 import practice.newbalance.service.item.ThumbnailDto;
 
 
@@ -264,10 +266,76 @@ public class ProductController {
      * @return
      */
     @GetMapping("/categories/{categoryId}")
-    public String productList(@PathVariable("categoryId")Long categoryId, Model model){
-        List<Product> products = productService.getProductsByCategoryId(categoryId);
+    public String productList(@PathVariable("categoryId")Long categoryId,
+                              @RequestParam(value = "sizes", required = false) List<String> sizes,
+                              @RequestParam(value = "colors", required = false) List<String> colors,
+                              @RequestParam(value = "minPrice", required = false) Integer minPrice,
+                              @RequestParam(value = "maxPrice", required = false) Integer maxPrice,
+                              Pageable pageable, Model model){
+
+        int checkMinPrice = (minPrice != null) ? minPrice : 0;
+        int checkMaxPrice = (maxPrice != null) ? maxPrice : Integer.MAX_VALUE;
+
+        Page<ProductDto> products = productService.getProductsByCategoryId(categoryId, sizes, colors, checkMinPrice, checkMaxPrice, pageable);
+        
+        // 사이즈
+        Set<String> size = products.stream()
+                .flatMap(product -> product.getProductOptions().stream()) // 1차 평탄화 Stream<ProductOption>
+                .flatMap(option-> option.getProductOptionDtoDetailsList().stream()) // 2차 평탄화 Stream<ProductOptionDtoDetails>
+                .map(ProductOptionDtoDetails::getSizeValue) //사이즈 값 추출
+                .collect(Collectors.toSet()); // Set으로 수집하여 중복 제거
+
+        int productMaxPrice = products.getContent().stream()
+                .mapToInt(ProductDto::getPrice)
+                .max()
+                .orElse(0);
+
+        // 색상
+        Set<String> color = products.stream()
+                .flatMap(product -> product.getProductOptions().stream()) // ProductOptionDto 리스트 평탄화
+                .map(ProductOptionDto::getColor) // ProductOptionDto의 getColor()메서드 호출
+                .collect(Collectors.toSet()); // Set으로 수집하여 중복 제거
+
+        // 카테고리(Men, Women, Kids) Enum
+        CategoryEnum categoryTitle = products.stream()
+                .map(product -> product.getCategory().getTitle())
+                .findFirst()
+                .orElse(null);
+
+        // 카테고리(1~7) ref
+        Integer categoryRef = products.stream()
+                .map(product -> product.getCategory().getRef())
+                .findFirst()
+                .orElse(null);
+
+        // 카테고리(Men, Women, Kids, 1~7)
+        List<CategoryDto> categorys = categoryService.findByTitleAndRef(categoryTitle, categoryRef);
+
+
         model.addAttribute("products", products);
+        model.addAttribute("color", color);
+        model.addAttribute("size", size);
+        model.addAttribute("categorys", categorys);
+        model.addAttribute("maxPrice", productMaxPrice);
+
         return "/item/productsList";
+    }
+
+    @PostMapping("/categories/productFilter")
+    public ResponseEntity<Map<String, Object>> getFilterProducts(@RequestBody ProductFilterDto filter, Pageable pageable) {
+
+        Long categoryId = Long.parseLong(filter.getCategoryId());
+        List<String> sizes = filter.getSizes();
+        List<String> colors = filter.getColors();
+        Integer minPrice = filter.getMinPrice();
+        Integer maxPrice = filter.getMaxPrice();
+
+        Page<ProductDto> productDtoPage = productService.getProductsByCategoryId(categoryId, sizes, colors, minPrice, maxPrice, pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", productDtoPage);
+
+        return ResponseEntity.ok(response);
     }
 
 }
