@@ -1,5 +1,7 @@
 package practice.newbalance.service.item;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import practice.newbalance.domain.item.Cart;
 import practice.newbalance.domain.item.Product;
@@ -33,5 +35,5 @@ public interface ProductService {
     void updateCartOption(Long cartId, String size, String color);
     void updateCartCount(Long cartId, int count);
 
-    List<Product> getProductsByCategoryId(Long categoryId);
+    Page<ProductDto> getProductsByCategoryId(Long categoryId, List<String> sizes, List<String> colors, Integer minPrice, Integer maxPrice,  Pageable pageable);
 }

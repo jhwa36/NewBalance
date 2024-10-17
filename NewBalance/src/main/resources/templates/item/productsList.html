@@ -1,18 +1,673 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{common/config/defaultLayout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Newbalance Clone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.js"></script>
+
+    <style>
+        .nav {
+            z-index: 10;
+        }
+
+        .container {
+            margin-top: 110px;
+            margin-left: 15px;
+            margin-right: 15px;
+            width: calc(100% - 30px); /* 전체 너비에서 왼쪽, 오른쪽 여백을 뺌 */
+            overflow: visible;
+
+        }
+        .listTop {
+            position: relative;
+            padding: 40px 55px 0;
+            box-sizing: border-box;
+            background: #fff;
+            width: 100%;
+            height: 100px;
+            z-index: 1;
+        }
+        .listTop .category_title {
+            padding: 0;
+            display: inline-block;
+            margin-bottom: 0;
+            line-height: 1;
+            z-index: 1;
+        }
+        .category_title {
+            color: #121212;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            z-index: 1;
+        }
+        .category_title h2 {
+            display: inline-block;
+        }
+
+        .listTop + .listContent {
+            margin-top: 0;
+        }
+        .listContent {
+            position: relative;
+        }
+        .listContent .listLeft {
+            transition: margin-left 0.03s;
+        }
+        .listLeft {
+            width: 22.13%;
+            position: absolute;
+            top: 12px;
+            left: 0;
+            padding: 0 2.34% 0 2.86%;
+            box-sizing: border-box;
+            padding-bottom: 110px;
+            background: #fff;
+            /*z-index: 10;*/
+            z-index: 1;
+        }
+
+        .listLeft .inner {
+            height: calc(100vh - 220px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding-bottom: 110px;
+        }
+        ul, ol, li {
+            list-style-type: none;
+            padding: 0;
+        }
+        .allList_list > li {
+            margin-bottom: 16px;
+            line-height: 1.5;
+            cursor: pointer;
+            padding: 0;
+        }
+        a {
+            text-decoration: none;
+            color: #141414;
+            font-weight: 400;
+        }
+        .accordion {
+            border-top: 1px solid #959595;
+            width: 100%;
+        }
+
+        .accordionTit {
+            position: relative;
+        }
+        .accordionTit > a {
+            font-weight: bold;
+            font-size: 15px;
+            padding: 20px 0;
+            position: relative;
+            display: block;
+        }
+
+        .accordionTit::after {
+            content: '';
+            width: 17px;
+            height: 16px;
+            display: block;
+            background: url(https://image.nbkorea.com/NBRB_PC/product/ico_toggleOn.png) no-repeat center;
+            background-size: cover;
+            position: absolute;
+            top: 50%;
+            margin-top: -8px;
+            right: 0;
+        }
+        .accordionTit.on::after {
+            content: '';
+            width: 17px;
+            height: 16px;
+            display: block;
+            background: url(https://image.nbkorea.com/NBRB_PC/product/ico_toggleOff.png) no-repeat center;
+            background-size: 17px 2px;
+        }
+
+        .accordionList {
+            padding-bottom: 30px;
+            font-size: 0;
+        }
+        .accordionList > li {
+            font-size: 15px;
+        }
+        .accordionList-border > li {
+            width: 18%;
+            margin-right: 2%;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 2%;
+        }
+        .accordionList-border > li {
+            width: 22%; !important;
+            margin-right: 2.6%; !important;
+            margin-bottom: 2.6%; !important;
+        }
+
+        .inputBox {
+            display: block;
+            position: relative;
+        }
+
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+        }
+        .ip_chk, .ip_rdo {
+            position: absolute;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+        }
+        .ip_chk-boxBg + label {
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            background: #fff;
+            color: #000;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .ip_chk-boxBg:checked + label {
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            background: #000;
+            color: #fff;
+            border: 1px solid #000;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .accordionList-border .ip_chk-boxBg + label {
+            vertical-align: middle;
+            word-break: break-word;
+            line-height: 1;
+            min-height: 35px;
+            display: table;
+            padding: 0;
+            font-size: 15px;
+        }
+
+        .accordionList-border .ip_chk-boxBg + label span {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .ip_chk-color + label {
+            position: relative;
+            display: block;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: -0.05px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #ccc
+        }
+
+        .ip_chk-color:checked + label::after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            background-size: cover;
+            display: block;
+            background-position: center;
+            background-image: url('https://image.nbkorea.com/NBRB_PC/common/img_filter_color_check.png');
+            position: absolute;
+            top: 0%;
+            left: 50%;
+            z-index: 1;
+            margin-left: -12px;
+        }
+
+        .accordionList-color > li {
+            margin-bottom: 10px;
+            width: 16.6%;
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            color: #3d3d3e;;
+        }
+        .ip_chk-color + label span {
+            display: block;
+        }
+
+        .filter_price {
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .filter_slider {
+            height: 5px;
+            background: #e6e6e6;
+            border-radius: 5px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        /* noUiSlider 스타일 */
+        .noUi-target {
+            background: #FAFAFA;
+            border-radius: 4px;
+            border: 1px solid #D3D3D3;
+            position: relative;
+        }
+
+        .noUi-handle {
+            background-color: #fff;
+            border: 1px solid #c9c9c9;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            top: -7px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .noUi-horizontal .noUi-handle {
+            top: -7px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            box-shadow: none;
+            border: solid 1px #c9c9c9;
+            cursor: pointer;
+        }
+        .noUi-connect {
+            background: #cf0a2c; /* 연결된 슬라이더 바 색상 */
+        }
+
+        .filter_price .price_range {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .listContent .listRight {
+            transition: padding-left 0.3s;
+        }
+        .listRight {
+            vertical-align: top;
+            width: 100%;
+            box-sizing: border-box;
+            padding-left: 22.13%;
+            padding-right: 2.86%;
+        }
+        .productList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 1.38%;
+            max-width: 1440px;
+        }
+        .pro_area {
+            position: relative;
+        }
+        .pro_thumbNail {
+            position: relative;
+        }
+        .pro_area .pro_thumbNail > a {
+            position: relative;
+            display: block;
+        }
+        .pro_area .pro_thumbNail {
+            width: 200px;
+            height: 100%;
+        }
+        .pro_area .pro_thumbNail .img_goods {
+            width: 100%;
+            vertical-align: middle;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .likeArea {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+        }
+        .icon_like:before {
+            content: '';
+            width: 40px;
+            height: 40px;
+            background: url("https://image.nbkorea.com/NBRB_PC/product/icon_heart.png");
+            background-size: cover;
+            display: block;
+        }
+        .icon_like.on:before {
+            background: url("https://image.nbkorea.com/NBRB_PC/product/icon_heartOn.png");
+        }
+        .pro_info {
+            line-height: 1;
+            padding-top: 16px;
+            padding-bottom: 40px;
+            position: relative;
+            font-size: 14px;
+        }
+        .prdName_name {
+            word-break: break-all;
+            overflow: hidden;
+            font-size: 16px;
+            line-height: 1.2;
+        }
+        .prdName {
+            position: relative;
+            margin-top: 18px;
+        }
+        .prdName_price {
+            font-weight: bold;
+            font-size: 17px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function(){
+            const categoryMapping = {
+                1: 'Featured',
+                2: '신발',
+                3: '의류',
+                4: '용품',
+                5: '언더웨어',
+                6: '스포츠',
+                7: '연중판매'
+            }
+
+            const categoryRef = $('#categoryRef').text();
+            const mappedCategory = categoryMapping[categoryRef];
+            $('#categoryRef').text(mappedCategory +  '▶ ' );
+
+
+            $(".accordionTit").on("click", function() {
+                // 슬라이드를 실행할 대상 ul
+                var accordionList = $(this).next(".accordionList");
+
+                // .accordionTit에 'on' 클래스를 토글
+                $(this).toggleClass("on");
+
+                // 슬라이드를 토글, .accordionList 외부 요소는 제외
+                if (accordionList.is(":visible")) {
+                    accordionList.slideUp();
+                } else {
+                    accordionList.slideDown();
+                }
+            });
+
+            // 사이즈 배열
+            const sizes = [];
+            for(let size = 220; size <= 300; size += 5) {
+                sizes.push(size);
+            }
+
+            // 사이즈 리스트가 추가될 ul태그
+            const sizeList = $('#sizeList');
+
+            // 각 사이즈에 대해 li > span > input + label + span 구조로 동적 생성
+            sizes.forEach(function(size) {
+               // li 요소 생성
+                let li = $('<li></li>');
+
+                // span 요소 생성
+                let span = $('<span></span>',{
+                    class: 'inputBox'
+                });
+
+                // input 요소 생성
+                let input = $('<input>', {
+                    type: 'checkbox',
+                    name: 'sizeCode',
+                    id: 'size'+ size,
+                    class: 'ip_chk ip_chk-boxBg',
+                    value: size,
+                    'data-text': size
+                });
+
+                // label 요소 생성
+                let label = $('<label></label>').attr('for','size' + size);
+
+                // label 내부에 사이즈 텍스트 span 추가
+                let labelSpan = $('<span></span>').text(size);
+
+                // label에 span 추가
+                label.append(labelSpan);
+
+                // span에 input + label 추가
+                span.append(input).append(label);
+
+                // li에 span 추가
+                li.append(span);
+
+                // ul에 li 추가
+                sizeList.append(li);
+            });
+
+            const slider = document.getElementById('filterSlider');
+
+            const maxPrice = [[${maxPrice}]]; // maxPrice 값 slider 최대값 설정
+
+            noUiSlider.create(slider, {
+                start: [0, maxPrice], // 초기 최소 및 최대 값 설정
+                connect: true, // 슬라이더가 연결된 바 표시
+                range: {
+                    'min': 0,
+                    'max': maxPrice
+                },
+                step: 10, // 슬라이더 단위
+                format: {
+                    to: function(value) {
+                        return Math.round(value); // 값 표시
+                    },
+                    from: function(value) {
+                        return Number(value);
+                    }
+                }
+            });
+
+            const priceMin = document.getElementById('priceMin');
+            const priceMax = document.getElementById('priceMax');
+
+            slider.noUiSlider.on('update', function(values, handle) {
+                if (handle === 0) {
+                    priceMin.innerHTML = values[0]; // 최소 가격 업데이트
+                } else {
+                    priceMax.innerHTML = values[1]; // 최대 가격 업데이트
+                }
+            });
+
+            function getSelectedFilters() {
+                // 카테고리 id
+                // const categoryId = $('#categoryId').val();
+
+                // 선택된 사이즈
+                const selectedSizes = [];
+                $('#sizeList input:checked').each(function(){
+                   selectedSizes.push($(this).val());
+                });
+
+                // 선택된 색상
+                const selectedColors = [];
+                $('input[name="colorCode"]:checked').each(function(){
+                   selectedColors.push($(this).val());
+                });
+
+                const minPrice = slider.noUiSlider.get()[0];
+                const maxPrice = slider.noUiSlider.get()[1];
+
+
+                return {
+                    categoryId: $('#categoryId').val(),
+                    sizes: selectedSizes,
+                    color: selectedColors,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice
+                };
+            }
+            function sendFilterData(){
+                // 필터 정보
+                const filter = getSelectedFilters();
+
+                $.ajax({
+                    url: '/categories/productFilter',
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify(filter),
+                    success: function(response) {
+
+                        console.log(response.content);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            // 신발 사이즈, 색상 선택 시 ajax 호출
+            $('#sizeList input, input[name="colorCode"]').on('change', function(){
+                sendFilterData();
+            });
+
+            // 가격 슬라이더 변경 시 ajax 호출
+            slider.noUiSlider.on('change', function(){
+                sendFilterData();
+            });
+
+
+        });
+    </script>
 </head>
+
+
 <body>
-<div class="container" layout:fragment="content">
-    <ul>
-        <li th:each="product: ${products}">
-            <span th:text="${product.id}">Product name</span>
-        </li>
-    </ul>
-</div>
+    <div class="container" layout:fragment="content">
+
+        <div class="listTop">
+            <div class="category_title">
+                <span th:if="${#lists.isEmpty(products.content)}">카테고리 없음</span>
+                <span th:unless="${#lists.isEmpty(products.content)}">
+                    <span th:text="${products.content[0].category.title} + '▶ ' "></span>
+                    <span id="categoryRef" th:text="${products.content[0].category.ref}"></span>
+                    <h2 th:text="${products.content[0].category.name}"></h2>
+                </span>
+            </div>
+        </div>
+
+        <!-- 카테고리 -->
+        <div class="listContent" style="min-height: 911px">
+            <div class="listLeft">
+                <div class="inner">
+                    <!-- categoryName -->
+                    <div class="allList">
+                        <ul class="allList_list">
+                            <li th:each="category: ${categorys}">
+                                <a th:href="@{/categories/{categoryId}(categoryId=${category.id})}" th:text="${category.name}"></a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 신발 사이즈-->
+                    <div class="accordion" id="filterSize">
+                        <p class="accordionTit on">
+                            <a href="javascript:void(0)">신발 사이즈</a>
+                        </p>
+                        <ul class="accordionList accordionList-border" id="sizeList" style="display: block;">
+                        <!-- 신발 size 동적 태그 추가 영역 -->
+                        </ul>
+                    </div>
+
+                    <div class="accordion accordion-color filterColor moreList">
+                        <p class="accordionTit on">
+                            <a href="javascript:void(0)">색상</a>
+                        </p>
+                        <ul class="accordionList accordionList-list accordionList-color all-color" style="display: block;">
+                        <!-- 색상 동적 추가 영역 -->
+                            <li th:each="color :${color}">
+                                <span class="inputBox">
+                                    <input type="checkbox"
+                                           th:id="'color' + ${color}"
+                                           class="ip_chk ip_chk-color"
+                                           name="colorCode"
+                                           th:value="${color}">
+                                    <!-- label for 속성은 input id값과 일치해야함. -->
+                                    <label th:for="'color' + ${color}"
+                                            th:style="'background-color:' + ${color}">
+                                        <span class="blind" th:text="${color}"></span>
+                                    </label>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="accordion" id="filterPrice">
+                        <p class="accordionTit on">
+                            <a href="javascript:void(0)">가격</a>
+                        </p>
+                        <ul class="accordionList accordionList-list" style="display: block;">
+                            <li>
+                                <div class="filter_price">
+                                    <!-- noUiSlider 적용 영역 -->
+                                    <div class="filter_slider" id="filterSlider"></div>
+                                    <div class="price_range">
+                                        <span id="priceMin"></span>
+                                        <span id="priceMax"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <input type="hidden" name="minPrice" value="">
+                                <input type="hidden" name="maxPrice" value="">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>t
+
+
+            <div id="product-list" class="listRight">
+                <ul class="productList" id="prodList">
+                    <li class="memberOnly" th:each="product: ${products}">
+                        <div class="pro_area">
+                            <div class="pro_thumbNail">
+                                <a href="" th:id="selDetail">
+                                    <img th:id="selGoods" class="img_goods" th:src="${product.thumbnailUrl[0]}" alt="Product Thumbnail" style="display: inline-block;"></img>
+                                </a>
+                            </div>
+                            <!-- like 버튼 -->
+                            <div class="likeArea">
+                                <a href="javascript:void(0)" class="icon_like"></a>
+                            </div>
+
+                            <!-- 상품 정보 -->
+                            <div class="pro_info">
+                                <p class="prdName_name" th:text="${product.title}"></p>
+                                <div class="prdName">
+                                    <p class="prdName_price" th:utext="${product.price + '원'}">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="categoryId" th:value="${product.category.id}">
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
 </body>
 </html>

@@ -5,6 +5,7 @@ import practice.newbalance.dto.item.CategoryDto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface CategoryService {
 
@@ -22,4 +23,6 @@ public interface CategoryService {
     List<CategoryDto> getAllCategories();
 
     Map<Integer, List<CategoryDto>> getGroupedCategoriesByTitle(CategoryEnum title);
+
+    List<CategoryDto> findByTitleAndRef(CategoryEnum title, Integer categoryRef);
 }

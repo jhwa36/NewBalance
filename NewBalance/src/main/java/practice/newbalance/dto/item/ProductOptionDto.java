@@ -18,4 +18,5 @@ public class ProductOptionDto {
         this.color = color;
         this.productOptionDtoDetailsList = productOptionDtoDetailsList;
     }
+
 }

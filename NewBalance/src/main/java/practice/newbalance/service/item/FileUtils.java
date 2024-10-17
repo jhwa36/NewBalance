@@ -82,6 +82,7 @@ public class FileUtils {
             File thumbnailFile = new File(basePath, "thumbnail_" + fileNm);
             Thumbnails.of(file)
                     .size(200, 200)
+                    .keepAspectRatio(false) // 비율 무시하고 정확히 200*200으로 설정
                     .toFile(thumbnailFile); // 크기 조정 (200x200)
 
             return thumbnailFile.getName();
