@@ -103,7 +103,7 @@ body{
 }
 
 .inner {
-    display: flex;
+    /*display: flex;*/
     gap: 20px; /* 각 .depth 요소 간의 간격 */
     margin-top: 30px;
     margin-left: 40px;
@@ -147,6 +147,7 @@ body{
 }
 
 .container {
+    padding : 0;
     margin-left: 0px;
     margin-right: 0px;
     height: 100%;
