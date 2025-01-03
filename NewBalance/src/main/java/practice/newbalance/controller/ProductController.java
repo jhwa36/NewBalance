@@ -4,6 +4,7 @@ package practice.newbalance.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,15 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import practice.newbalance.domain.item.CategoryEnum;
 import practice.newbalance.domain.item.Product;
-import practice.newbalance.domain.item.ProductOption;
 import practice.newbalance.dto.item.*;
 import practice.newbalance.service.item.CategoryService;
 import practice.newbalance.service.item.ProductService;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.item.Cart;
@@ -29,6 +27,7 @@ import practice.newbalance.service.item.ThumbnailDto;
 
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -277,7 +276,7 @@ public class ProductController {
         int checkMaxPrice = (maxPrice != null) ? maxPrice : Integer.MAX_VALUE;
 
         Page<ProductDto> products = productService.getProductsByCategoryId(categoryId, sizes, colors, checkMinPrice, checkMaxPrice, pageable);
-        
+
         // 사이즈
         Set<String> size = products.stream()
                 .flatMap(product -> product.getProductOptions().stream()) // 1차 평탄화 Stream<ProductOption>
@@ -338,4 +337,44 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    //검색 관련 controller
+    @GetMapping("/search")
+    public String searchHome(
+            @RequestParam("keyword") String keyword,
+            @RequestParam("option") String option,
+            @RequestParam(value = "sizes", required = false) List<String> sizes,
+            @RequestParam(value = "colors", required = false) List<String> colors,
+            @RequestParam(value = "minPrice", required = false) Integer minPrice,
+            @RequestParam(value = "maxPrice", required = false) Integer maxPrice,
+            Pageable pageable, Model model){
+
+        log.info("keyword = {}, option = {}", keyword, option);
+
+        Map<Integer, List<CategoryDto>> menCategories = categoryService.getGroupedCategoriesByTitle(CategoryEnum.MEN);
+        Map<Integer, List<CategoryDto>> womenCategories = categoryService.getGroupedCategoriesByTitle(CategoryEnum.WOMEN);
+        List<String> genderList = Arrays.asList(new String[]{"MEN", "WOMEN", "KIDS"});
+        List<String> priceList = Arrays.asList(
+                new String[]{"5만원 미만", "5만원 - 10만원 미만", "10만원 - 15만원 미만",
+                        "15만원 - 20만원 미만", "20만원 이상"});
+        List<String> categoryList = Arrays.asList(new String[]{"신발", "러닝", "의류"});
+
+        Page<ProductDto> products = productService.getProductsByKeyword(keyword, sizes, colors, minPrice, maxPrice, pageable);
+        //컬러 리스트 저장
+        //사이즈 리스트 저장
+
+        model.addAttribute("count", 0);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("option", option);
+
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("genderList", genderList);
+        model.addAttribute("priceList", priceList);
+        model.addAttribute("products", products);
+        model.addAttribute("colors", colors);
+        model.addAttribute("sizes", sizes);
+
+
+        return "/item/searchResult";
+
+    }
 }

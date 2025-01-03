@@ -35,5 +35,8 @@ public interface ProductService {
     void updateCartOption(Long cartId, String size, String color);
     void updateCartCount(Long cartId, int count);
 
-    Page<ProductDto> getProductsByCategoryId(Long categoryId, List<String> sizes, List<String> colors, Integer minPrice, Integer maxPrice,  Pageable pageable);
+    Page<ProductDto> getProductsByCategoryId(Long categoryId, List<String> sizes, List<String> colors, Integer minPrice,
+                                             Integer maxPrice,  Pageable pageable);
+    Page<ProductDto> getProductsByKeyword(String keyword, List<String> sizes, List<String> colors, Integer minPrice,
+                                          Integer maxPrice,  Pageable pageable);
 }

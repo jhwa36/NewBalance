@@ -35,6 +35,7 @@ a {
     width: 1900px;
     background-color: white;
     margin-top: 0;
+    z-index: 10;
 }
 
 .nav-inner{

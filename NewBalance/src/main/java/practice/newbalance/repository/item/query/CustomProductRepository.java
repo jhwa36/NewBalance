@@ -14,4 +14,6 @@ public interface CustomProductRepository {
     List<ProductOptionDto> getProductOption(Long productId);
 
     Page<ProductDto> findProductsByCategoryId(Long categoryId, List<String> sizes, List<String> colors, Integer minPrice, Integer maxPrice,  Pageable pageable);
+    Page<ProductDto> findProductByKeyword(String keyword, List<String> sizes, List<String> color, Integer minPrice,
+                                          Integer maxPrice, Pageable pageable);
 }

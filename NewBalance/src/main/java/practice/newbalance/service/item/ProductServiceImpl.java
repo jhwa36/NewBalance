@@ -373,5 +373,10 @@ public class ProductServiceImpl implements ProductService{
         return customProductRepository.findProductsByCategoryId(categoryId, sizes, colors, minPrice, maxPrice, pageable);
 //        return productRepository.findByCategoryId(categoryId);
     }
+
+    @Override
+    public Page<ProductDto> getProductsByKeyword(String keyword, List<String> sizes, List<String> colors, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return customProductRepository.findProductByKeyword(keyword, sizes, colors, minPrice, maxPrice, pageable);
+    }
 }
 

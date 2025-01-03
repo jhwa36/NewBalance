@@ -5,6 +5,7 @@ import lombok.*;
 import practice.newbalance.domain.item.Category;
 import practice.newbalance.domain.item.Product;
 import practice.newbalance.domain.item.Thumbnail;
+import practice.newbalance.service.item.ThumbnailDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class ProductDto {
 
     private LocalDate manufactureDate;
 
+    private CategoryDto categoryDto;
+
     private Category category;
 
     private String option;
@@ -44,6 +47,8 @@ public class ProductDto {
     private List<String> imageUrls = new ArrayList<>();
 
     private List<String> thumbnailUrl = new ArrayList<>();  // 썸네일 URL 리스트 추가
+
+    private List<ThumbnailDto> thumbnailDtos = new ArrayList<>();
 
     @QueryProjection
     public ProductDto(Long id, String title, String content, String code,
@@ -79,6 +84,25 @@ public class ProductDto {
         this.productOptions = productOptions;
         this.thumbnailUrl = thumbnailUrls;  // 추가된 부분
     }
+
+    @QueryProjection
+    public ProductDto(Long id, String title, String content, String code, String contry,
+                      String material, String features, int price, LocalDate manufactureDate,
+                      CategoryDto categoryDto, List<ProductOptionDto> productOptions, List<ThumbnailDto> thumbnailDtos) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.code = code;
+        this.contry = contry;
+        this.material = material;
+        this.features = features;
+        this.price = price;
+        this.manufactureDate = manufactureDate;
+        this.categoryDto = categoryDto;
+        this.productOptions = productOptions;
+        this.thumbnailDtos = thumbnailDtos;  // 추가된 부분
+    }
+
     // 생성자
     public ProductDto(Long id, String title, String content, String code, String contry, String material, String features, Integer price, LocalDate manufactureDate, Category category) {
         this.id = id;
