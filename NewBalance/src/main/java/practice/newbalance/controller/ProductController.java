@@ -29,6 +29,7 @@ import practice.newbalance.service.item.ThumbnailDto;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:8080")
 public class ProductController {
 
     private final ProductService productService;

@@ -1,8 +1,11 @@
 package practice.newbalance.repository.item.query;
 
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -298,6 +301,9 @@ public class ProductRepositoryImpl implements CustomProductRepository{
         QProductOption productOption = QProductOption.productOption;
         QThumbnail thumbnail = QThumbnail.thumbnail;
 
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(sizeCondition(sizes, productOption));
+
         // 1.전체 카운트 계산
         Long totalResult = queryFactory
                 .select(product.count())
@@ -407,23 +413,32 @@ public class ProductRepositoryImpl implements CustomProductRepository{
     @Override
     public Page<ProductDto> findProductByKeyword(
             String keyword, List<String> sizes, List<String> color, Integer minPrice, Integer maxPrice, Pageable pageable) {
+
         QProduct product = QProduct.product;
         QProductOption option = QProductOption.productOption;
         QThumbnail thumbnail = QThumbnail.thumbnail;
         QCategory category = QCategory.category;
+
+        // BooleanBuilder 를 사용해 동적 쿼리 구성
+        BooleanBuilder condition = new BooleanBuilder();
+
+        // 키워드 검색 (제목또는 카테고리 이름)
+        condition.and(keywordCondition(keyword, product, category));
+
+        // 사이즈 필터
+        condition.and(sizeCondition(sizes, option));
+
+        // 색상 필터
+
+        // 가격 필터
+
+
         // 전체 카운트 계산
         Long totalResult = queryFactory
                 .select(product.count())
                 .from(product)
                 .join(category).on(category.id.eq(product.category.id))
-                .where(
-                        category.name.like(keyword).or(product.title.like(keyword))
-                        .and(sizes != null && !sizes.isEmpty() ? productOption.size.in(sizes) : null )  //사이즈 필터
-                        .and(color != null && !color.isEmpty() ? productOption.color.in(color) : null)  //색상 필터
-                        .and(
-                                minPrice != null && maxPrice != null ?
-                                        product.price.between(minPrice, maxPrice) : null
-                        ))  //가격 필터
+                .where(condition)  //가격 필터
                 .fetchOne();
 
         long total = (totalResult == null)? 0L : totalResult;
@@ -448,11 +463,7 @@ public class ProductRepositoryImpl implements CustomProductRepository{
                 )
                 .from(product)
                 .leftJoin(product.productOptions, productOption)
-                .where(product.title.like(keyword).or(category.name.like(keyword))
-                        .and(sizes != null && !sizes.isEmpty() ? productOption.size.in(sizes) : null) // 사이즈 필터 (null 처리)
-                        .and(color != null && !color.isEmpty() ? productOption.color.in(color) : null) // 색상 필터 (null 처리)
-                        .and(minPrice != null && maxPrice != null ? product.price.between(minPrice, maxPrice) : null) // 가격 필터 (null 처리)
-                )
+                .where(condition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -521,4 +532,19 @@ public class ProductRepositoryImpl implements CustomProductRepository{
         // 옵션 세부정보 추가
         return new PageImpl<>(content, pageable, total);
     }
+
+    // 키워드 검색 (제목 또는 카테고리명)
+    private BooleanExpression keywordCondition(String keyword, QProduct product, QCategory category) {
+        if( keyword == null || keyword.trim().isEmpty() ) {
+            return null; // 검색어가 없으면 조건을 아예 추가하지 않음
+        }
+        String formattedKeyword = "%" + keyword + "%";
+        return category.name.like(formattedKeyword).or(product.title.like(formattedKeyword));
+    }
+
+    // 사이즈 조건
+    private Predicate sizeCondition(List<String> sizes, QProductOption option) {
+        return (sizes != null && !sizes.isEmpty()) ? option.size.in(sizes) : null;
+    }
+
 }
