@@ -530,7 +530,30 @@
                     data: JSON.stringify(filter),
                     success: function(response) {
 
-                        console.log(response.content);
+                        $('#product-list').empty(); // 상품 리스트 초기화
+
+
+                        console.log('전체 응답 구조 : ' + response);
+
+                        if(response.content) {
+                            console.log('content 내부 구조 : ' +response.content);
+
+                            if(Array.isArray(response.content.content)) {
+                                console.log('content.content는 배열이다');
+                            } else {
+                                console.log('content.content는 배열이 아니다 현재 값', response.content.content);//
+                            }
+                        }else {
+                            console.log('response.content가 없다');//
+                        }
+
+                        response.content.content.forEach( product => {
+                           console.log( product);
+                           console.log('사용 가능한 키들',Object.keys(product));
+                           console.log('아이디', product.id || '아이디없음');
+
+                        });
+
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
