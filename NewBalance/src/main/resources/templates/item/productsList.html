@@ -529,8 +529,42 @@
                     contentType: 'application/json',
                     data: JSON.stringify(filter),
                     success: function(response) {
+                        $('#prodList').empty(); // 무조건 초기화
 
-                        $('#product-list').empty(); // 상품 리스트 초기화
+                        if(response.content && Array.isArray(response.content.content)) {
+                            const productList = response.content.content;
+
+                            if(productList.length > 0) {
+                                productList.forEach(product => {
+                                    const productHtml = `
+                                    <li class="memberOnly">
+                                        <div class="pro_area">
+                                            <div class="pro_thumbNail">
+                                                <a href="" id="selDetail">
+                                                    <img class="img_goods" src="${product.thumbnailUrl[0]}" alt="product Thumbnail" style="display: inline-block;">
+                                                </a>
+                                            </div>
+                                            <div class="likeArea">
+                                                <a href="javascript::void(0)" class="icon_like"></a>
+                                            </div>
+                                            <div class="pro_info">
+                                                <p class="prdName_name">${product.title}</p>
+                                                <div class="prdName">
+                                                    <p class="proName_price">${product.price}원</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    `;
+                                    $('#prodList').append(productHtml);
+                                });
+                            } else {
+                                $('#prodList').append('<li>검색 결과가 없습니다.</li>');
+                            }
+                        } else {
+                            $('#prodList').append('<li>상품을 불러오지 못했습니다.</li>');
+                        }
+
 
 
                         console.log('전체 응답 구조 : ' + response);
@@ -663,6 +697,8 @@
 
 
             <div id="product-list" class="listRight">
+                <input type="hidden" id="categoryId" th:value="${categoryId}">
+
                 <ul class="productList" id="prodList">
                     <li class="memberOnly" th:each="product: ${products}">
                         <div class="pro_area">
@@ -685,7 +721,9 @@
                                 </div>
                             </div>
                         </div>
+<!--
                         <input type="hidden" id="categoryId" th:value="${product.category.id}">
+-->
                     </li>
                 </ul>
             </div>
