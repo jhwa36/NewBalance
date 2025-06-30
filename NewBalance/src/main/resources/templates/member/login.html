@@ -94,11 +94,11 @@
                     <ul class="form__list">
                         <li>
                             <label class="form__label" th:for="userId">아이디</label>
-                            <input type="text" name="webId" id="userId" class="jsLoginFormInput form__input" maxlength="50" placeholder="예) nbkorea" th:field="*{userId}"> <br>
+                            <input type="text" name="userId" id="userId" class="jsLoginFormInput form__input" maxlength="50" placeholder="예) nbkorea" th:field="*{userId}"> <br>
                         </li>
                         <li>
                             <label th:for="password">비밀번호</label>
-                            <input type="password" name="webPw" id="password"class="jsLoginFormInput form__input" maxlength="20" th:field="*{password}"> <br>
+                            <input type="password" name="password" id="password" class="jsLoginFormInput form__input" maxlength="20" th:field="*{password}"> <br>
                         </li>
                     </ul>
                     <p style="display: none" class="error_txt" id="error_text"

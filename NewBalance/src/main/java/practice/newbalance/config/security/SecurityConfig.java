@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/members/**", "/faqs/**","/notice/**","/notice"
+                        .requestMatchers("/","/**","/member/**","/members/login", "/login/login-proc","/members/**", "/faqs/**","/notice/**","/notice"
                                 ,"/api/**", "/css/**", "common/config/**", "/products/**", "/image/**",
                                 "/test/**", "/categories/**", "/search/**", "/res/**")
                         .permitAll() //해당 경로는 인증 없이 접근 가능
@@ -49,7 +49,7 @@ public class SecurityConfig {
         http.logout((auth) -> auth
                 .logoutUrl("/members/logout") //로그아웃 처리 URL 설정
                 .logoutSuccessUrl("/") //로그아웃 성공 후 이동할 페이지
-                .deleteCookies("JESSIONID") // 로그아웃 후 쿠키 삭제
+                .deleteCookies("JSESSIONID") // 로그아웃 후 쿠키 삭제
         );
         //세션 다중 로그인
         http.sessionManagement((auth) -> auth

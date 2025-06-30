@@ -318,7 +318,7 @@ public class ProductController {
         model.addAttribute("categorys", categorys);
         model.addAttribute("maxPrice", productMaxPrice);
 
-        return "/item/productsList";
+        return "item/productsList";
     }
 
     @PostMapping("/categories/productFilter")
@@ -375,7 +375,7 @@ public class ProductController {
         model.addAttribute("sizes", sizes);
 
 
-        return "/item/searchResult";
+        return "item/searchResult";
 
     }
 }

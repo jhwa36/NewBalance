@@ -51,7 +51,7 @@ public class AdminController {
     @GetMapping("/admin-page")
     public String adminPage(){
 
-        return "/admin/adminPage";
+        return "admin/adminPage";
     }
 
 
@@ -205,7 +205,7 @@ public class AdminController {
         Notice noticeDto = noticeService.findNoticeById(noticeId);
         model.addAttribute("noticeDto", noticeDto);
 
-        return "/board/noticeDetail";
+        return "board/noticeDetail";
     }
 
     /**

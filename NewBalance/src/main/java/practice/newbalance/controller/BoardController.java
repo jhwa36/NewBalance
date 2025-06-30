@@ -113,7 +113,7 @@ public class BoardController {
         model.addAttribute("limit", limit);
         model.addAttribute("totalNotices", totalNotices);
 
-        return "/board/noticeList"; // Thymeleaf template name
+        return "board/noticeList"; // Thymeleaf template name
     }
 
     @GetMapping(value = "/api/notices")
@@ -145,7 +145,7 @@ public class BoardController {
         noticeService.updateCount(noticeId, request, response);
         model.addAttribute("noticeDto", noticeDto);
 
-        return "/board/noticeDetail";
+        return "board/noticeDetail";
     }
 
     /**
@@ -157,7 +157,7 @@ public class BoardController {
         Notice noticeDto = noticeService.findNoticeById(noticeId);
         model.addAttribute("noticeDto", noticeDto);
 
-        return "/board/noticeEditForm";
+        return "board/noticeEditForm";
     }
 
     /**
@@ -195,7 +195,7 @@ public class BoardController {
         model.addAttribute("author", userDetails.getUsername());
         model.addAttribute("noticeDto", new NoticeDto());
 
-        return "/board/noticeForm";
+        return "board/noticeForm";
     }
 
     /**

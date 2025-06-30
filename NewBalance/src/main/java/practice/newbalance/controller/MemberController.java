@@ -56,7 +56,7 @@ public class MemberController {
     @GetMapping("/members/join")
     public String members(Model model) {
         model.addAttribute("memberDto", new MemberDto());
-        return "/member/join";
+        return "member/join";
     }
 
     /**
@@ -71,7 +71,7 @@ public class MemberController {
             model.addAttribute("memberDto", memberDto);
 
             //회원 가입 페이지로 리턴
-            return "/member/join";
+            return "member/join";
         }
         //회원 가입 성공
         memberService.join(memberDto);

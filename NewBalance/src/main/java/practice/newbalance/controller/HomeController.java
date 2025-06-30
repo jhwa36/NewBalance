@@ -16,14 +16,14 @@ public class HomeController {
     }
 
     //테스트용
-    @GetMapping("test/bad-request")
-    public ResponseEntity<Object> test400Error() {
-        try{
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA);
-        }
-        catch(Exception ex) {
-            throw new CustomException(ex);
-        }
-    }
+//    @GetMapping("test/bad-request")
+//    public ResponseEntity<Object> test400Error() {
+//        try{
+//            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA);
+//        }
+//        catch(Exception ex) {
+//            throw new CustomException(ex);
+//        }
+//    }
 
 }

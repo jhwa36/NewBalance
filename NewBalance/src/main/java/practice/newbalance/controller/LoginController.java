@@ -24,10 +24,10 @@ public class LoginController {
 
         model.addAttribute("memberDto", new MemberDto());
 
-        return "/member/login";
+        return "member/login";
     }
 
-    @GetMapping("/members/logout")
+//    @GetMapping("/members/logout")
     public String logoutPage(){
 
         return "redirect:/";
