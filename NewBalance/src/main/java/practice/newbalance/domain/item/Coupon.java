@@ -57,10 +57,10 @@ public class Coupon extends ModifierEntity {
     }
 
     public void isCoupon() {
-        if (quantity <= 0) {
+        if (this.quantity <= 0) {
             throw new IllegalStateException("수량이 이미 부족합니다");
         }
-        quantity -= 1;
+        this.quantity = this.quantity -1;
     }
 
     public CouponDto toDto(){
