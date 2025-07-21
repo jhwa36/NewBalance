@@ -169,7 +169,7 @@ gradle-app.setting
 *.hprof
 
 ## 로컬 설정 관리제외
-application-local.yml
+#application-local.yml
 
 /src/main/generated/**
 
