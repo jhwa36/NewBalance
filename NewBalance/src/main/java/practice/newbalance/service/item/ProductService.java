@@ -10,6 +10,7 @@ import practice.newbalance.dto.item.ProductDto;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ProductService {
 
@@ -21,6 +22,10 @@ public interface ProductService {
     List<Product> getAllProducts();
     List<Product> findProductWithProductOptionsById(Long productId);
     Map<String, Object> getProductOption(Long productId);
+
+    Optional<Product> findProductById(Long id);
+
+    List<String> getSizeValues(Long productId);
 
     void deleteByColorAndIdIn(String color, List<Integer> optionId);
     void deleteByProductId(Long productId);

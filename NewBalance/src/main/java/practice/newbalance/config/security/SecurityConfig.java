@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/**","/member/**","/members/login", "/login/login-proc","/members/**", "/faqs/**","/notice/**","/notice"
-                                ,"/api/**", "/css/**", "common/config/**", "/products/**", "/image/**",
+                                ,"/api/**", "/css/**", "common/config/**", "/products/**", "/product/**", "/image/**",
                                 "/test/**", "/categories/**", "/search/**", "/res/**")
                         .permitAll() //해당 경로는 인증 없이 접근 가능
                         .requestMatchers("/admin","/admin-page","/notice/notice-form","/notice/notice-detail",

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #contentImage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .product-detail-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .thumbnail-list {
+            margin-right: 20px;
+        }
+
+        .thumbnail-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .thumbnail-list li {
+            margin-bottom: 10px;
+        }
+
+        .thumbnail-list img.thumbnail {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+
+        .main-image img {
+            width: 400px;
+            height: 400px;
+            object-fit: cover;
+            border: 2px solid #333;
+        }
+        .size-wrapper{
+            display: flex;
+            justify-content: flex-end; /*오른쪽 정렬 */
+            padding: 20px;
+        }
+        .size-list{
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 40px;
+            gap:5px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 300px;
+        }
+        .size-button {
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            background-color: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .size-button:hover:not(:disabled){
+            background-color: #f0f0f0;
+        }
+        .size-button:disabled {
+            background-color: #e0e0e0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        /* 오른쪽: 상품 정보 + 사이즈 */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 400px;
+            height: 400px; /* 메인이미지 높이에 맞춤 */
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #444;
+        }
+
+        .size-section {
+            margin-top: auto;
+        }
+
+        .size-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 40px;
+            gap: 5px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .size-button {
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            background-color: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .size-button:hover:not(:disabled) {
+            background-color: #f0f0f0;
+        }
+
+        .size-button:disabled {
+            background-color: #e0e0e0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        #contentImage {
+            max-width: 1000px;
+            margin: 100px auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="product-detail-container">
+    <!-- 썸네일 리스트 왼쪽 -->
+    <div class="thumbnail-list">
+        <ul>
+            <li th:each="thumb : ${product.thumbnailUrl}">
+                <img th:src="${thumb.thumbnailUrl}" alt="썸네일" class="thumbnail" onmouseover="changeMainImage(this.src)">
+            </li>
+        </ul>
+    </div>
+    <!-- 메인 이미지 오른쪽 -->
+    <div class="main-image">
+        <img id="mainProductImage" th:src="${product.thumbnailUrl[0].thumbnailUrl}" alt="메인이미지">
+    </div>
+
+    <!-- 오른쪽 상품정보 및 사이즈선택-->
+    <div class="product-info">
+        <div>
+            <div class="product-title" th:text="${product.title}"></div>
+            <div class="product-price" th:text="${product.price + '원'}"></div>
+        </div>
+
+        <div class="size-section">
+            <h4>사이즈 선택</h4>
+            <ul class="size-list">
+                <li th:each="entry : ${sizeAvailability}">
+                    <button th:text="${entry.key}"
+                    th:disabled="${!entry.value}"
+                    class="size-button"></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--<div class="size-wrapper">-->
+<!--    <ul class="size-list">-->
+<!--        <li th:each="entry : ${sizeAvailability}">-->
+<!--            <button th:text="${entry.key}"-->
+<!--                    th:disabled="${!entry.value}"-->
+<!--                    class="size-button">-->
+<!--            </button>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</div>-->
+
+<div style="margin-bottom: 100px;" id="contentImage" th:utext="${product.content}"></div>
+
+
+<script>
+    function changeMainImage(src) {
+        document.getElementById("mainProductImage").src = src;
+    }
+</script>
+
+</body>
+</html>

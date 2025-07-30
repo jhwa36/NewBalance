@@ -17,7 +17,8 @@ public class FileUtils {
     @Autowired
     private ServletContext ctx; // 내장 tomcat이기 때문에
 
-    private static final String BASE_PATH = "c:/upload";
+    private static final String BASE_PATH = "c:/upload"; // 로컬환경
+//    private static final String BASE_PATH = "/home/ubuntu/upload"; // 운영환경
 
     public void makeFolders(String path) {
         File folder = new File(path);

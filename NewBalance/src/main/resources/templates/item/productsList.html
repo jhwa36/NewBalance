@@ -703,7 +703,7 @@
                     <li class="memberOnly" th:each="product: ${products}">
                         <div class="pro_area">
                             <div class="pro_thumbNail">
-                                <a href="" th:id="selDetail">
+                                <a th:href="@{'/product/' + ${product.id}}" th:id="selDetail">
                                     <img th:id="selGoods" class="img_goods" th:src="${product.thumbnailUrl[0]}" alt="Product Thumbnail" style="display: inline-block;"></img>
                                 </a>
                             </div>

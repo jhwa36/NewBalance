@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import practice.newbalance.common.ErrorCode;
+import practice.newbalance.common.exception.CustomException;
 import practice.newbalance.domain.item.CategoryEnum;
 import practice.newbalance.domain.item.Product;
 import practice.newbalance.dto.item.*;
@@ -20,6 +22,7 @@ import practice.newbalance.service.item.ProductService;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import practice.newbalance.config.security.CustomUserDetail;
 import practice.newbalance.domain.item.Cart;
@@ -378,4 +381,32 @@ public class ProductController {
         return "item/searchResult";
 
     }
+
+    // 상품상세조회
+    @GetMapping("/product/{id}")
+    public String viewPort(@PathVariable Long id, Model model) {
+        Product product = productService.findProductById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
+
+        // 1. 전체 사이즈 리스트 구성 (220~ 290 5단위)
+        List<String> allSizes = IntStream.iterate(220, size-> size<=290, size->size+5 )
+                .mapToObj(String::valueOf)
+                .collect(Collectors.toList());
+
+        // 2. 실제 등록된 사이즈만 DB에서 조회
+        List<String> availableSizes = productService.getSizeValues(id);
+
+        // 3. 각각의 사이즈 상태를 Map<String, Boolean>으로 구성
+        Map<String, Boolean> sizeAvailability = allSizes.stream()
+                        .collect(Collectors.toMap(
+                                size -> size,
+                                size -> availableSizes.contains(size)
+                        ));
+
+        model.addAttribute("product", product);
+        model.addAttribute("sizeAvailability", sizeAvailability);
+
+        return "item/productDetail";
+    }
+
 }
