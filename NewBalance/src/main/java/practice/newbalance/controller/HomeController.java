@@ -30,13 +30,13 @@ public class HomeController {
 }
 
     // 상품상세조회
-//    @GetMapping("/product/{id}")
-//    public String viewPort(@PathVariable Long id, Model model) {
-//        Product product = productService.findProductById(id)
-//                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
-//        model.addAttribute("product", product);
-//        return "item/productDetail";
-//    }
+    @GetMapping("{id}")
+    public String viewPort(@PathVariable Long id, Model model) {
+        Product product = productService.findProductById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_EXISTED_DATA));
+        model.addAttribute("product", product);
+        return "item/productDetail";
+    }
 }
 
 

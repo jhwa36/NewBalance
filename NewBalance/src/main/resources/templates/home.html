@@ -48,7 +48,7 @@
         <h1 style="text-align: center;">전체 상품 목록</h1>
 
         <div th:each="product : ${products}" class="product-card">
-            <a th:href="@{'/product/' + ${product.id}}">
+            <a th:href="@{${product.id}}">
                 <img th:src="${product.thumbnailUrl[0].thumbnailUrl}" alt="썸네일">
                 <div class="product-title" th:text="${product.title}"></div>
                 <div class="product-price" th:text="${product.price} + '원'"></div>
