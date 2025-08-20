@@ -12,6 +12,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import practice.newbalance.config.handler.MemberAuthFailHandler;
 import practice.newbalance.config.handler.MemberAuthSuccessHandler;
+import practice.newbalance.config.oauth.CustomOAuth2UserService;
+import practice.newbalance.config.service.CustomUserDetailSerivce;
 
 import java.util.Arrays;
 
@@ -19,6 +21,8 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -45,7 +49,16 @@ public class SecurityConfig {
                         .successHandler(new MemberAuthSuccessHandler()) //로그인 성공 후 처리할 핸들러
                         .failureHandler(new MemberAuthFailHandler()) // 로그인 실패 후 처리할 핸들러
                         .permitAll()
+                )
+                // OAuth2 로그인 설정
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/members/login")  // OAuth2 로그인 페이지 경로
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .defaultSuccessUrl("/")       // OAuth2 로그인 성공 후 리다이렉트
+                        .failureUrl("/members/login?error")
+                        .permitAll()
                 );
+
         http.logout((auth) -> auth
                 .logoutUrl("/members/logout") //로그아웃 처리 URL 설정
                 .logoutSuccessUrl("/") //로그아웃 성공 후 이동할 페이지

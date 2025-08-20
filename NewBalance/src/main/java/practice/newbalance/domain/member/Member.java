@@ -46,6 +46,9 @@ public class Member {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "provider")
+    private String provider;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coupon> coupons = new ArrayList<>();
 

@@ -107,7 +107,9 @@
 
                     <div id="idAvaliable" class="valid-feedback" style="display: none;">true</div>
                     <button type="submit" id="loginBtn" class="login__btn login__btn--login" sec:authorize="isAnonymous()">로그인</button>
-
+                    <a th:href="@{/oauth2/authorization/google}">
+                        <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Google 로그인"/>
+                    </a>
                 </div>
             </div>
         </div>
