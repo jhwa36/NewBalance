@@ -10,19 +10,39 @@
             padding: 20px;
         }
 
-        .product-card {
-            display: inline-block;
-            width: 250px;
-            margin: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
+        /*.product-card {*/
+        /*    display: inline-block;*/
+        /*    width: 250px;*/
+        /*    margin: 20px;*/
+        /*    padding: 10px;*/
+        /*    border: 1px solid #ccc;*/
+        /*    text-align: center;*/
+        /*}*/
 
         .product-card img {
-            width: 200px;
+            width: 100%;
             height: 200px;
-            object-fit: cover;
+            object-fit: contain;
+            background-color: #f5f5f5;
+        }
+        /*.product-card img {*/
+        /*    width: 200px;*/
+        /*    height: 200px;*/
+        /*    object-fit: cover;*/
+        /*}*/
+        .thumbnail-wrapper {
+            width: 100%;
+            height: 220px;
+            background-color: #f6f6f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .thumbnail-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         .product-title {
@@ -34,6 +54,31 @@
             font-size: 16px;
             color: #555;
         }
+
+        .product-card {
+            display: inline-block;
+            width: 250px;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .thumbnail-wrapper {
+            width: 100%;
+            height: 220px;
+            background-color: #f6f6f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .thumbnail-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
     </style>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -44,17 +89,37 @@
 <body>
 <div class="container" layout:fragment="content">
 
-    <div class="product-container">
-        <h1 style="text-align: center;">전체 상품 목록</h1>
+        <div class="product-container">
+            <h1 style="text-align: center;">전체 상품 목록</h1>
+    <div th:each="product : ${products}" class="product-card">
+        <a th:href="@{/product/{id}(id=${product.id})}">
 
-        <div th:each="product : ${products}" class="product-card">
-            <a th:href="@{${product.id}}">
-                <img th:src="${product.thumbnailUrl[0].thumbnailUrl}" alt="썸네일">
-                <div class="product-title" th:text="${product.title}"></div>
-                <div class="product-price" th:text="${product.price} + '원'"></div>
-            </a>
-        </div>
+            <img th:if="${product.thumbnailUrl != null and !#lists.isEmpty(product.thumbnailUrl)}"
+                 th:src="${product.thumbnailUrl[0]}"
+                 alt="썸네일"/>
+
+            <div class="product-title" th:text="${product.title}"></div>
+            <div class="product-price" th:text="${product.price + '원'}"></div>
+        </a>
     </div>
+
+
+
+<!--        <div th:each="product : ${products}" class="product-card">-->
+<!--            <a th:href="@{${product.id}}">-->
+<!--                <img th:src="${product.thumbnailUrl[0].thumbnailUrl}" alt="썸네일">-->
+<!--                <div class="product-title" th:text="${product.title}"></div>-->
+<!--                <div class="product-price" th:text="${product.price} + '원'"></div>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <ul>-->
+<!--        <li th:each="member : ${members}">-->
+<!--            <a th:href="@{/member(email=${member.email})}"-->
+<!--            th:text="${member.email}">Email</a>-->
+<!--        </li>-->
+<!--    </ul>-->
+        </div>
 </div>
 </body>
 </html>

@@ -15,6 +15,7 @@ import practice.newbalance.domain.member.Member;
 import practice.newbalance.dto.item.CouponDto;
 import practice.newbalance.dto.member.DeliveryAddressDto;
 import practice.newbalance.dto.member.MemberDto;
+import practice.newbalance.repository.MemberMapper;
 import practice.newbalance.repository.MemberRepository;
 import practice.newbalance.repository.item.CouponRepository;
 import practice.newbalance.repository.item.query.CouponRepositoryImpl;
@@ -28,6 +29,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MemberService {
 
+    protected final MemberMapper memberMapper;
     private final MemberRepository memberRepository;
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -250,4 +252,10 @@ public class MemberService {
         return couponRepositoryImpl.getCouponCount(memberId, startDate, endDate);
     }
 
+    public List<MemberDto> getAllMembers() {
+        return memberMapper.findAll();
+    }
+    public MemberDto getMemberByEmail(String email) {
+        return memberMapper.findByEmail(email);
+    }
 }

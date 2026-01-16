@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import practice.newbalance.domain.board.Notice;
 import practice.newbalance.dto.board.FaqDto;
 import practice.newbalance.dto.board.NoticeDto;
+import practice.newbalance.repository.board.NoticeMapper;
 import practice.newbalance.service.board.FaqServiceImpl;
 
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class BoardController {
 
     private final FaqServiceImpl faqService;
     private final NoticeService noticeService;
+    private final NoticeMapper noticeMapper;
 
     @GetMapping("/faqs")
     public String FaqList(
@@ -105,8 +107,11 @@ public class BoardController {
                              @RequestParam(value = "offset", defaultValue = "0") int offset,
                              @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
-        List<NoticeDto> notices = noticeService.getNotice(offset, limit);
-        long totalNotices = noticeService.getNoticeCount();
+//        List<NoticeDto> notices = noticeService.getNotice(offset, limit);
+//        long totalNotices = noticeService.getNoticeCount();
+
+        List<NoticeDto> notices = noticeMapper.findAll(limit, offset);
+        long totalNotices = noticeMapper.findCount();
 
         model.addAttribute("notices", notices);
         model.addAttribute("offset", offset);
@@ -121,8 +126,10 @@ public class BoardController {
     public Map<String, Object> getNoticesJson(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
-        List<NoticeDto> notices = noticeService.getNotice(offset, limit);
-        long totalNotices = noticeService.getNoticeCount();
+//        List<NoticeDto> notices = noticeService.getNotice(offset, limit);
+//        long totalNotices = noticeService.getNoticeCount();
+        List<NoticeDto> notices = noticeService.findAll(limit, offset);
+        long totalNotices = noticeService.findCount();
 
         Map<String, Object> response = new HashMap<>();
         response.put("notices", notices);
@@ -135,15 +142,17 @@ public class BoardController {
      * 공지사항 상세 폼
      * 조회수  증가
      */
-    @GetMapping(value = "/notice/notice-detail/{noticeId}")
+    @GetMapping(value = "/notice/noticeDetail/{noticeId}")
     public String detailNoticeForm(@PathVariable("noticeId") Long noticeId,
                                    HttpServletRequest request,
                                    HttpServletResponse response,
                                    Model model) {
 
-        Notice noticeDto = noticeService.findNoticeById(noticeId);
+//        Notice noticeDto = noticeService.findNoticeById(noticeId);
+        NoticeDto noticeDto = noticeService.findNoticeById(noticeId);
         noticeService.updateCount(noticeId, request, response);
         model.addAttribute("noticeDto", noticeDto);
+
 
         return "board/noticeDetail";
     }
@@ -154,7 +163,7 @@ public class BoardController {
     @GetMapping(value = "/notice/edit-form/{noticeId}")
     public String editNoticeForm(@PathVariable("noticeId") Long noticeId, Model model) {
 
-        Notice noticeDto = noticeService.findNoticeById(noticeId);
+        NoticeDto noticeDto = noticeService.findNoticeById(noticeId);
         model.addAttribute("noticeDto", noticeDto);
 
         return "board/noticeEditForm";
@@ -166,7 +175,10 @@ public class BoardController {
     @PostMapping(value = "/notice/edit/{noticeId}")
     public String updateNotice(@PathVariable("noticeId") Long noticeId, @ModelAttribute("noticeDto") NoticeDto noticeDto) {
 
-        noticeService.updateNotice(noticeId, noticeDto);
+//        noticeService.updateNotice(noticeId, noticeDto);
+        noticeDto.setId(noticeId);
+//        noticeMapper.updateNotice(noticeDto);
+        noticeService.updateNotice(noticeDto);
 
         return "redirect:/notice";
     }
@@ -174,10 +186,11 @@ public class BoardController {
     /**
      * 공지사항 글 삭제
      */
-    @GetMapping(value = "/notice/delete/{noticeId}")
+    @DeleteMapping(value = "/notice/delete/{noticeId}")
     public String deleteNotice(@PathVariable("noticeId") Long noticeId) {
 
         noticeService.deleteNotice(noticeId);
+//        noticeMapper.deleteNotice(noticeId);
 
         return "redirect:/notice";
     }
@@ -188,7 +201,7 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping(value = "/admin/notice-form")
+    @GetMapping(value = "/admin/noticeform")
     public String noticeForm(Authentication authentication,
                              Model model) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -207,7 +220,8 @@ public class BoardController {
     @PostMapping(value = "/admin/add-notice")
     public String noticeAdd(NoticeDto noticeDto) {
 
-        noticeService.saveNotice(noticeDto);
+//        noticeService.saveNotice(noticeDto);
+        noticeMapper.insertNotice(noticeDto);
 
         return "redirect:/admin-page";
     }

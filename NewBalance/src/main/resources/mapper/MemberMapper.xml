@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="practice.newbalance.repository.MemberMapper">
+
+    <resultMap id="MemberResultMap" type="MemberDto">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <select id="findAll" resultType="practice.newbalance.dto.member.MemberDto">
+        SELECT *
+        FROM member
+    </select>
+
+    <select id="findByEmail" parameterType="string" resultType="practice.newbalance.dto.member.MemberDto">
+        SELECT * FROM member WHERE email = #{email}
+    </select>
+
+    <insert id="insert" parameterType="MemberDto">
+        INSERT INTO member(username, email) VALUES(#{username}, #{email})
+    </insert>
+
+    <update id="update" parameterType="MemberDto">
+        UPDATE member SET username = #{username}, email = #{email} WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM member WHERE id = #{id}
+    </delete>
+
+</mapper>

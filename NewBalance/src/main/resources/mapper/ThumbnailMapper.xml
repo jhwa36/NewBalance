@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="practice.newbalance.repository.item.ThumbnailMapper">
+
+    <select id="findByProductIds" resultType="practice.newbalance.dto.item.ThumbnailRowDto">
+        SELECT
+        product_id    AS productId,
+        thumbnail_url AS thumbnailUrl
+        FROM product_thumbnails
+        <where>
+            <if test="productIds != null and productIds.size() > 0">
+                product_id IN
+                <foreach collection="productIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="productIds == null or productIds.size() == 0">
+                1 = 0
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

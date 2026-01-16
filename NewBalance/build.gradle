@@ -43,6 +43,9 @@ dependencies {
     // 회원가입시 검증에 필요한 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // Mapper
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
     //queryDSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

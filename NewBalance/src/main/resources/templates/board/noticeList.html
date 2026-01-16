@@ -20,10 +20,8 @@
         </thead>
         <tbody>
         <tr th:each="notice : ${notices}">
-            <td th:text="${notice.id}"></td>
-            <td>
-                <a href="" th:href="@{/notice/notice-detail/{noticeId}(noticeId=${notice.id})}" th:text="${notice.noticeTitle}"></a>
-            </td>
+            <td> <a href="" th:href="@{/notice/noticeDetail/{noticeId}(noticeId=${notice.id})}"  th:text="${notice.id}"></a></td>
+            <td th:text="${notice.noticeTitle}"></td>
             <td th:text="${#temporals.format(notice.modifiedDate, 'yyyy-MM-dd')}"></td>
             <td th:text="${notice.noticeCount}"></td>
         </tr>
@@ -31,7 +29,7 @@
         </tbody>
     </table>
 
-    <button th:onclick="|location.href='@{/notice/notice-form}'|"  sec:authorize="hasRole('ROLE_ADMIN')">글쓰기</button>
+    <button th:onclick="|location.href='@{/admin/noticeform}'|"  sec:authorize="hasRole('ROLE_ADMIN')">글쓰기</button>
 
     <button id="loadMore" th:text="'더보기('+${totalNotices}+')'" >더보기</button>
 
@@ -57,12 +55,12 @@
                     const notices = data.notices;
                     const noticesTable = $('#noticesTable tbody');
                         notices.forEach(notice => {
-                            const link = '<a href="/notice/noticeDetail/' + notice.id + '">' + notice.noticeTitle + '</a>';
+                            const link = '<a href="/notice/noticeDetail' + notice.id + '">' + notice.id + '</a>';
                             const formattedDate = formatDate(notice.modifiedDate);
                             noticesTable.append(
                                 '<tr>' +
-                                '<td>' + notice.id +'</td>' +
-                                '<td>' + link + '</td>' +
+                                '<td>' + link +'</td>' +
+                                '<td>' + notice.noticeTitle + '</td>' +
                                 '<td>' + formattedDate + '</td>' +
                                 '<td>' + notice.noticeCount + '</td>' +
                                 '</tr>');

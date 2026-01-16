@@ -44,4 +44,14 @@ public interface ProductService {
                                              Integer maxPrice,  Pageable pageable);
     Page<ProductDto> getProductsByKeyword(String keyword, List<String> sizes, List<String> colors, Integer minPrice,
                                           Integer maxPrice,  Pageable pageable);
+
+    Page<ProductDto> findProductsByCategory(
+            Long categoryId,
+            List<String> sizes,
+            List<String> colors,
+            Integer minPrice,
+            Integer maxPrice,
+            Pageable pageable
+    );
+
 }

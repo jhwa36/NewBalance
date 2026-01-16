@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="practice.newbalance.repository.item.ProductMapper">
+
+    <select id="countProductsByCategory" resultType="long">
+        SELECT COUNT(DISTINCT p.product_id)
+        FROM product p
+        JOIN product_opt po ON p.product_id = po.product_id
+        <where>
+
+            <!-- categoryId 있을 때만 -->
+            <if test="categoryId != null">
+                p.category_id = #{categoryId}
+            </if>
+
+            <if test="sizes != null and sizes.size() > 0">
+                AND po.size IN
+                <foreach collection="sizes" item="size" open="(" separator="," close=")">
+                    #{size}
+                </foreach>
+            </if>
+
+            <if test="colors != null and colors.size() > 0">
+                AND po.color IN
+                <foreach collection="colors" item="color" open="(" separator="," close=")">
+                    #{color}
+                </foreach>
+            </if>
+
+            <if test="minPrice != null and maxPrice != null">
+                AND p.price BETWEEN #{minPrice} AND #{maxPrice}
+            </if>
+
+        </where>
+    </select>
+
+
+    <select id="findProductsByCategory"
+            resultType="practice.newbalance.dto.item.ProductOptionRowDto">
+
+        SELECT
+        p.product_id AS productId,
+        p.title AS title,
+        p.content AS content,
+        p.code AS code,
+        p.contry AS contry,
+        p.material AS material,
+        p.features AS features,
+        p.price AS price,
+        p.manufacture_date AS manufactureDate,
+        p.category_id AS categoryId,
+
+        po.color AS color,
+        po.size AS size,
+        po.quantity AS quantity
+
+        FROM product p
+        LEFT JOIN product_opt po ON p.product_id = po.product_id
+
+        <where>
+
+            <if test="categoryId != null">
+                p.category_id = #{categoryId}
+            </if>
+
+            <if test="sizes != null and sizes.size() > 0">
+                AND po.size IN
+                <foreach collection="sizes" item="size" open="(" separator="," close=")">
+                    #{size}
+                </foreach>
+            </if>
+
+            <if test="colors != null and colors.size() > 0">
+                AND po.color IN
+                <foreach collection="colors" item="color" open="(" separator="," close=")">
+                    #{color}
+                </foreach>
+            </if>
+
+            <if test="minPrice != null and maxPrice != null">
+                AND p.price BETWEEN #{minPrice} AND #{maxPrice}
+            </if>
+
+        </where>
+
+        ORDER BY p.product_id
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+</mapper>

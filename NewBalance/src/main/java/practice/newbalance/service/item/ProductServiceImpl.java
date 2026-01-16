@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,18 +19,14 @@ import practice.newbalance.domain.item.Product;
 import practice.newbalance.domain.item.ProductOption;
 import practice.newbalance.domain.item.Thumbnail;
 import practice.newbalance.domain.member.Member;
-import practice.newbalance.dto.item.ProductDto;
-import practice.newbalance.dto.item.ProductOptionDto;
-import practice.newbalance.dto.item.ProductOptionDtoDetails;
+import practice.newbalance.dto.item.*;
 import practice.newbalance.repository.MemberRepository;
-import practice.newbalance.repository.item.CartRepository;
-import practice.newbalance.repository.item.ProductOptionRepository;
-import practice.newbalance.repository.item.ProductRepository;
-import practice.newbalance.repository.item.ThumbnailRepository;
+import practice.newbalance.repository.item.*;
 import practice.newbalance.repository.item.query.CustomProductRepository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +41,9 @@ public class ProductServiceImpl implements ProductService{
     private final CustomProductRepository customProductRepository;
     private final ProductOptionRepository productOptionRepository;
     private final ThumbnailRepository thumbnailRepository;
+    private final ProductMapper productMapper;
+    private final ThumbnailMapper thumbnailMapper;
+
 
     @Value("${server.url}")
     private String serverUrl; // 서버 URL을 프로퍼티 파일에서 읽어옴
@@ -387,6 +387,75 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<String> getSizeValues(Long productId) {
         return productRepository.findSizeValuesByProductId(productId);
+    }
+
+    @Override
+    public Page<ProductDto> findProductsByCategory(Long categoryId, List<String> sizes, List<String> colors, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        // 1. 전체 개수
+        long total = productMapper.countProductsByCategory(categoryId, sizes, colors, minPrice, maxPrice);
+
+        // 2. 상품 + 옵션 조회
+        List<ProductOptionRowDto> rows =
+        productMapper.findProductsByCategory(categoryId,
+                sizes,
+                colors,
+                minPrice,
+                maxPrice,
+                (int) pageable.getOffset(),
+                pageable.getPageSize());
+
+        // 3. ProductDto 조립
+        Map<Long, ProductDto> productMap = new LinkedHashMap<>();
+        for(ProductOptionRowDto row : rows){
+            Long productId = row.getProductId();
+            ProductDto productDto = productMap.computeIfAbsent(productId, id->
+                    new ProductDto(
+                            id,
+                            row.getTitle(),
+                            row.getContent(),
+                            row.getCode(),
+                            row.getContry(),
+                            row.getMaterial(),
+                            row.getFeatures(),
+                            row.getPrice(),
+                            row.getManufactureDate(),
+                            row.getCategory()
+                    ));
+
+            ProductOptionDtoDetails detail =
+                    new ProductOptionDtoDetails(row.getSize(), row.getQuantity());
+
+            ProductOptionDto option = productDto.getProductOptions().stream()
+                    .filter(o-> o.getColor().equals(row.getColor()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                       ProductOptionDto newOption =
+                       new ProductOptionDto(row.getColor(), new ArrayList<>());
+                       productDto.getProductOptions().add(newOption);
+                       return newOption;
+                    });
+            option.getProductOptionDtoDetailsList().add(detail);
+
+            if(!productMap.isEmpty()){
+                List<Long> productIds = new ArrayList<>(productMap.keySet());
+
+                List<ThumbnailRowDto> thumbnailRows = thumbnailMapper.findByProductIds(productIds);
+
+                Map<Long, List<String>> thumbnailMap = thumbnailRows.stream()
+                        .collect(Collectors.groupingBy(
+                                ThumbnailRowDto::getProductId,
+                                Collectors.mapping(ThumbnailRowDto::getThumbnailUrl,
+                                        Collectors.toList())
+                        ));
+                productMap.values().forEach(dto ->
+                        dto.setThumbnailUrl(
+                                thumbnailMap.getOrDefault(dto.getId(), new ArrayList<>())
+                        ));
+
+            }
+        }
+
+        return new PageImpl<>(new ArrayList<>(productMap.values()), pageable, total);
     }
 }
 

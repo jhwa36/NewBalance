@@ -29,14 +29,15 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/**","/member/**","/members/login", "/login/login-proc","/members/**", "/faqs/**","/notice/**","/notice"
+                        .requestMatchers("/admin/**","/admin-page/**","/notice/notice-form/**","/notice/notice-detail/**",
+                                "/notice/edit-form/**","/admin/faqs/**", "/admin/coupon")
+                        .hasRole("ADMIN") //해당 경로는 인증이 필요 ROLE이 ADMIN이 포함된 경우에만 인증 가능
+                        .requestMatchers("/my/**", "/order/**", "/orders/**")
+                        .hasAnyRole("ADMIN","USER") //마이페이지 ROLE이 ADMIN과 USER 일 경우 가능
+                        .requestMatchers("/","/member/**","/members/login", "/login/login-proc","/members/**", "/faqs/**","/notice/**","/notice"
                                 ,"/api/**", "/css/**", "common/config/**", "/products/**", "/product/**", "/image/**",
                                 "/test/**", "/categories/**", "/search/**", "/res/**")
                         .permitAll() //해당 경로는 인증 없이 접근 가능
-                        .requestMatchers("/admin","/admin-page","/notice/notice-form","/notice/notice-detail",
-                                "/notice/edit-form","/admin/faqs", "/admin/coupon")
-                        .hasRole("ADMIN") //해당 경로는 인증이 필요 ROLE이 ADMIN이 포함된 경우에만 인증 가능
-                        .requestMatchers("/my/**", "/order/**", "/orders/**").hasAnyRole("ADMIN","USER") //마이페이지 ROLE이 ADMIN과 USER 일 경우 가능
                         .anyRequest().authenticated()
                 );
         http

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="practice.newbalance.repository.board.NoticeMapper">
+
+    <select id="findAll" resultType="practice.newbalance.dto.board.NoticeDto">
+        SELECT notice_id AS id,
+               notice_title AS noticeTitle,
+               notice_content AS noticeContent,
+               notice_count AS noticeCount,
+               created_date AS createdDate,
+               modified_date AS modifiedDate
+        FROM notice
+        Order BY notice_id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findCount" resultType="long" >
+        SELECT count(*) FROM
+                     NOTICE
+    </select>
+
+    <select id="findById" parameterType="long" resultType="practice.newbalance.dto.board.NoticeDto">
+        SELECT * FROM
+        NOTICE where notice_id = #{id}
+    </select>
+
+    <update id="updateNotice" parameterType="practice.newbalance.dto.board.NoticeDto">
+        UPDATE notice
+        SET
+            notice_title = #{noticeTitle},
+            notice_content = #{noticeContent},
+            modified_date = NOW()
+        WHERE notice_id = #{id}
+    </update>
+
+    <delete id="deleteNotice" parameterType="long">
+        delete
+        from notice
+        where notice_id = #{id}
+
+    </delete>
+
+    <insert id="insertNotice" parameterType="practice.newbalance.dto.board.NoticeDto" useGeneratedKeys="true" keyProperty="id">
+        insert into notice (notice_title, notice_content, created_date)
+        values (#{noticeTitle}, #{noticeContent}, NOW())
+    </insert>
+
+</mapper>

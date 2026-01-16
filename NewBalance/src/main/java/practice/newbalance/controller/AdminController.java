@@ -1,6 +1,5 @@
 package practice.newbalance.controller;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -8,9 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import practice.newbalance.domain.board.FaqTag;
-import practice.newbalance.domain.board.Notice;
 import practice.newbalance.dto.board.FaqDto;
 import practice.newbalance.dto.board.NoticeDto;
 import practice.newbalance.dto.item.CategoryDto;
@@ -202,7 +199,7 @@ public class AdminController {
     public String detailNoticeForm(@PathVariable("noticeId") Long noticeId,
                                    Model model) {
 
-        Notice noticeDto = noticeService.findNoticeById(noticeId);
+        NoticeDto noticeDto = noticeService.findNoticeById(noticeId);
         model.addAttribute("noticeDto", noticeDto);
 
         return "board/noticeDetail";
@@ -217,7 +214,7 @@ public class AdminController {
     public ResponseEntity<String> updateNotice(@PathVariable("noticeId") Long noticeId,
                                                @RequestBody NoticeDto noticeDto) {
         try{
-            noticeService.updateNotice(noticeId, noticeDto);
+            noticeService.updateNotice(noticeDto);
             return ResponseEntity.ok("success");
         }catch (Exception e){
          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");

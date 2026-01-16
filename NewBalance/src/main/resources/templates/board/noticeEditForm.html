@@ -20,7 +20,7 @@
             <input type="hidden" name="author" class="form-control" id="inputAuthor" th:field="*{createdBy}" th:value="${author}">
         </div>
         <div  class="form-group">
-            <label th:for="notice_title">날짜</label>
+            <label th:for="notice_date">날짜</label>
             <input type="text" disabled th:field="*{modifiedDate}">
         </div>
         <div class="form-group">
@@ -29,7 +29,7 @@
         </div>
         <button type="submit">저장</button>
     </form>
-    <button th:onclick="|location.href='@{/notice/notice-detail/{noticeId}(noticeId=${noticeId})}'|">취소</button>
+    <button th:onclick="|location.href='@{/notice/noticeDetail/{noticeId}(noticeId=${noticeId})}'|">취소</button>
 
 </div>
 
