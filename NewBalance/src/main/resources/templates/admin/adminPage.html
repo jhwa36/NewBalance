@@ -9,6 +9,7 @@
     <!-- ckEditor api -->
     <script th:src="@{/ckeditor5/build/ckeditor.js}"></script>
     <script type="text/javascript" src="/js/admin/adminPage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <!-- UUID 라이브러리-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
@@ -433,22 +434,25 @@
             </div>
         </div>
         <!-- coupon Add Modal 끝 -->
+        <button id="productEditBtn" sec:authorize="hasRole('ROLE_ADMIN')">등록</button>
 
         <!-- product list 시작 -->
-        <div id="productDivList">
-        <table id="productTable">
-            <thead>
-            <tr>
-                <th>content</th>
-                <th>contry</th>
-                <th>price</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Products 내용목록 -->
-            </tbody>
-            <button id="productEditBtn" sec:authorize="hasRole('ROLE_ADMIN')">등록</button>
-        </table>
+        <div id="productDivList" class="product-grid">
+            <!-- AJAX로 상품 카드 들어갈 곳 -->
+        </div>
+
+<!--            <table id="productTable">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>content</th>-->
+<!--                <th>contry</th>-->
+<!--                <th>price</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            &lt;!&ndash; Products 내용목록 &ndash;&gt;-->
+<!--            </tbody>-->
+<!--        </table>-->
 
         </div>
         <!-- product list 끝 -->
@@ -458,39 +462,80 @@
         <div id="productEditModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <form id="productForm" enctype="multipart/form-data" >
+                <h2 class="modal-title">신규 상품 등록</h2>
+
+                <form id="productForm" enctype="multipart/form-data">
                     <div id="productWrite">
-                        <div id="productModal">
-                            <input type="text" id="productTitle" placeholder="상품명을 입력하세요.">
-                            <input type="number" id="productPrice" placeholder="가격을 입력하세요.">
-                            <input type="text" id="productCode" placeholder="코드를 입력하세요.">
-                            <input type="text" id="productContry" placeholder="국가를 입력하세요.">
-                            <input type="text" id="productManufactureDate" placeholder="날짜를 입력하세요.">
-                            <input type="text" id="productMaterial" placeholder="소재를 입력하세요.">
-                            <textarea id="productFeatures"></textarea>
+                        <div class="input-group-container">
+                            <div class="form-row">
+                                <label for="productTitle">상품명</label>
+                                <input type="text" id="productTitle" placeholder="상품명을 입력하세요.">
+                            </div>
 
-                            <select id="productCategorySelect1"></select>
-                            <select id="productCategorySelect2"></select>
-                            <select id="productCategorySelect3"></select>
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="productPrice">가격</label>
+                                    <input type="number" id="productPrice" placeholder="가격을 입력하세요.">
+                                </div>
+                                <div class="form-row">
+                                    <label for="productCode">상품코드</label>
+                                    <input type="text" id="productCode" placeholder="코드를 입력하세요.">
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="productContry">제조국</label>
+                                    <input type="text" id="productContry" placeholder="국가를 입력하세요.">
+                                </div>
+                                <div class="form-row">
+                                    <label for="productManufactureDate">제조일자</label>
+                                    <input type="text" id="productManufactureDate" placeholder="YYYY-MM-DD">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label for="productMaterial">소재</label>
+                                <input type="text" id="productMaterial" placeholder="소재를 입력하세요.">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="productFeatures">상품 특징</label>
+                                <textarea id="productFeatures" placeholder="상품 특징을 입력하세요."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <label>카테고리 설정</label>
+                            <div class="select-group">
+                                <select id="productCategorySelect1"></select>
+                                <select id="productCategorySelect2"></select>
+                                <select id="productCategorySelect3"></select>
+                            </div>
+                        </div>
+
+                        <div class="file-section">
+                            <label>상품 썸네일 등록</label>
                             <input type="file" id="thumbnailInput" name="thumbnails" multiple accept="image/*"/>
-                            <div id="thumbnailPreview"></div>
-
-                            <div class="colorContainer">
-                                <!-- 신발 색상 및 사이즈 및 수량 입력 그룹 추가 -->
-                            </div>
-                            <button type="button" class="addColorBtn">옵션 추가</button>
+                            <div id="thumbnailPreview" class="thumbnail-list"></div>
                         </div>
 
-                        <!-- ckEditor -->
-                        <div>
+                        <div class="option-section">
+                            <label>상품 옵션 (색상/사이즈)</label>
+                            <div class="colorContainer"></div>
+                            <button type="button" class="addColorBtn">+ 옵션 추가</button>
+                        </div>
+
+                        <div class="editor-section">
+                            <label>상세 설명 내용</label>
                             <div class="post-form">
-                                <textarea id="ckEditor" style="width:100%;height: 500px;"></textarea>
+                                <textarea id="ckEditor"></textarea>
                             </div>
                         </div>
 
-                        <div id="modalEditWrite">
-                            <button type="button" id="editProductBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">등록</button>
-                            <button type="button" id="cancelEditProductBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">취소</button>
+                        <div id="modalEditWrite" class="button-group">
+                            <button type="button" id="editProductBtn" class="btn btn-save" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록</button>
+                            <button type="button" id="cancelEditProductBtn" class="btn btn-cancel" sec:authorize="hasRole('ROLE_ADMIN')">취소</button>
                         </div>
                     </div>
                 </form>
@@ -502,43 +547,84 @@
         <div id="productUpdateModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <form id="updateProductForm" enctype="multipart/form-data" >
+                <h2 class="modal-title">상품 수정</h2>
+
+                <form id="updateProductForm" enctype="multipart/form-data">
                     <div id="updateProductWrite">
-                        <div id="updateProductModal">
+                        <div class="input-group-container">
                             <input type="hidden" id="updateProductId">
-                            <input type="text" id="updateProductTitle" placeholder="상품명을 입력하세요.">
-                            <input type="number" id="updateProductPrice" placeholder="가격을 입력하세요.">
-                            <input type="text" id="updateProductCode" placeholder="코드를 입력하세요.">
-                            <input type="text" id="updateProductContry" placeholder="국가를 입력하세요.">
-                            <input type="text" id="updateProductManufactureDate" placeholder="날짜를 입력하세요.">
-                            <input type="text" id="updateProductMaterial" placeholder="소재를 입력하세요.">
-                            <textarea id="updateProductFeatures"></textarea>
 
-                            <select id="updateProductCategorySelect1"></select>
-                            <select id="updateProductCategorySelect2"></select>
-                            <select id="updateProductCategorySelect3"></select>
+                            <div class="form-row">
+                                <label for="updateProductTitle">상품명</label>
+                                <input type="text" id="updateProductTitle" placeholder="상품명을 입력하세요.">
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="updateProductPrice">가격</label>
+                                    <input type="number" id="updateProductPrice" placeholder="가격을 입력하세요.">
+                                </div>
+                                <div class="form-row">
+                                    <label for="updateProductCode">상품코드</label>
+                                    <input type="text" id="updateProductCode" placeholder="코드를 입력하세요.">
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label for="updateProductContry">제조국</label>
+                                    <input type="text" id="updateProductContry" placeholder="국가를 입력하세요.">
+                                </div>
+                                <div class="form-row">
+                                    <label for="updateProductManufactureDate">제조일자</label>
+                                    <input type="text" id="updateProductManufactureDate" placeholder="YYYY-MM-DD">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label for="updateProductMaterial">소재</label>
+                                <input type="text" id="updateProductMaterial" placeholder="소재를 입력하세요.">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="updateProductFeatures">상품 특징</label>
+                                <textarea id="updateProductFeatures" placeholder="상품 특징을 입력하세요."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <label>카테고리 설정</label>
+                            <div class="select-group">
+                                <select id="updateProductCategorySelect1"></select>
+                                <select id="updateProductCategorySelect2"></select>
+                                <select id="updateProductCategorySelect3"></select>
+                            </div>
+                        </div>
+
+                        <div class="file-section">
+                            <label>상품 썸네일</label>
                             <input type="file" id="updateThumbnailInput" name="thumbnails" multiple accept="image/*"/>
-                            <div id="existingThumbnails"></div> <!-- 기존 썸네일 추가 -->
-                            <div id="updateThumbnailPreview"></div>
-
-                            <div class="colorContainer">
-                                <!-- 색상 및 사이즈 및 수량 입력 그룹 추가 -->
-                            </div>
-
-                            <button type="button" class="addColorBtn">옵션 추가</button>
+                            <div id="existingThumbnails" class="thumbnail-list"></div>
+                            <div id="updateThumbnailPreview" class="thumbnail-list"></div>
                         </div>
 
-                        <!-- ckEditor -->
-                        <div>
+                        <div class="option-section">
+                            <label>상품 옵션</label>
+                            <div class="colorContainer"></div>
+                            <button type="button" class="addColorBtn">+ 옵션 추가</button>
+                        </div>
+
+                        <div class="editor-section">
+                            <label>상세 설명</label>
                             <div class="post-form">
-                                <textarea id="updateCkEditor" style="width:100%;height: 500px;"></textarea>
+                                <textarea id="updateCkEditor"></textarea>
                             </div>
                         </div>
 
-                        <div id="modalUpdateWrite">
-                            <button type="button" id="updateProductBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">등록</button>
-                            <button type="button" id="deleteProductBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">삭제</button>
-                            <button type="button" id="cancelUpdateProductBtn" class="btn btn-primary"  sec:authorize="hasRole('ROLE_ADMIN')">취소</button>
+                        <div id="modalUpdateWrite" class="button-group">
+                            <button type="button" id="updateProductBtn" class="btn btn-save" sec:authorize="hasRole('ROLE_ADMIN')">수정 완료</button>
+                            <button type="button" id="deleteProductBtn" class="btn btn-delete" sec:authorize="hasRole('ROLE_ADMIN')">상품 삭제</button>
+                            <button type="button" id="cancelUpdateProductBtn" class="btn btn-cancel" sec:authorize="hasRole('ROLE_ADMIN')">취소</button>
                         </div>
                     </div>
                 </form>

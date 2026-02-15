@@ -163,4 +163,145 @@ body{
 #thumbnailPreview img {
     width: 100px;
     margin: 10px;
+}/* 1. 상품 리스트를 3개씩 배치하는 그리드 설정 */
+.product-grid {
+    display: grid;
+    /* 정확히 3등분 */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 2. 콘텐츠 영역 수정 (가로 스크롤 방지 핵심) */
+.adminContent {
+    /* 기존 100%에서 마진값만큼 빼줘야 화면 안에 들어옵니다 */
+    width: calc(100% - 450px);
+    margin-top: 135px;
+    /* 왼쪽 마진을 적절히 조절 (사이드바 200px 고려) */
+    margin-left: 250px;
+    margin-right: auto;
+    box-sizing: border-box;
+    /* 내부 요소가 튀어나가지 않게 방어 */
+    overflow-x: hidden;
+}
+
+/* 3. 개별 상품 카드 및 이미지 최적화 */
+.product-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-thumbnail {
+    width: 100%;      /* 카드 너비에 맞춤 */
+    height: 200px;    /* 높이 고정 */
+    object-fit: cover; /* 이미지 비율 유지하며 채움 */
+    cursor: pointer;
+}
+
+.product-info {
+    padding-top: 10px;
+    text-align: center;
+}
+
+.product-info h4 {
+    font-size: 16px;
+    margin: 5px 0;
+    /* 제목이 너무 길면 한 줄 처리 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+/* 1. 콘텐츠 영역: 사이드바 너비만큼 비워주고 너비 자동 계산 */
+.adminContent {
+    margin-left: 200px; /* 사이드바 너비(200px)만큼만 정확히 띄우기 */
+    width: calc(100% - 200px); /* 전체 너비에서 사이드바 빼기 */
+    margin-top: 135px;
+    padding: 20px;
+    box-sizing: border-box; /* 패딩이 너비에 영향을 주지 않도록 설정 */
+    overflow-x: hidden; /* 가로 스크롤 강제 방지 */
+}
+
+/* 2. 상품 그리드: 3등분 설정 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 1:1:1 비율로 3칸 생성 */
+    gap: 20px; /* 카드 사이 간격 */
+    width: 100%;
+}
+
+/* 3. 개별 카드 스타일: 이미지가 너무 커지지 않게 제한 */
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-thumbnail {
+    width: 100%;
+    height: 180px; /* 높이를 적절히 고정 */
+    object-fit: contain; /* 이미지가 잘리지 않고 상자 안에 다 들어가게 함 */
+    background-color: #f9f9f9;
+}
+
+.product-info {
+    padding: 10px;
+    text-align: center;
+}/* 1. 콘텐츠 영역: 사이드바(200px) 제외 공간 확보 및 세로 스크롤 허용 */
+.adminContent {
+    margin-left: 200px;         /* 사이드바 너비 고정 */
+    width: calc(100% - 200px);  /* 사이드바를 뺀 나머지 전체 */
+    margin-top: 135px;
+    padding: 20px;
+    box-sizing: border-box;
+    display: block;
+
+    /* 세로 스크롤을 위한 설정 */
+    height: calc(100vh - 135px); /* 화면 전체 높이에서 상단 여백 제외 */
+    overflow-y: auto;            /* 상품이 많아지면 자동으로 세로 스크롤 발생 */
+    overflow-x: hidden;          /* 가로 스크롤은 절대 방지 */
+}
+
+/* 2. 상품 그리드: 한 줄에 3개씩 배치 */
+.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 3. 개별 상품 카드 */
+.product-card {
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* 4. 이미지 크기 조정 */
+.product-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background-color: #f8f8f8;
+}
+
+/* 스크롤바 디자인 (선택사항: 깔끔하게 보이게 함) */
+.adminContent::-webkit-scrollbar {
+    width: 8px;
+}
+.adminContent::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
 }

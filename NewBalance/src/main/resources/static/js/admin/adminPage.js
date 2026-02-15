@@ -426,39 +426,31 @@ $(document).ready(function () {
             $('#faqEditModal').hide();
         } else if (event.target === $('#faqUpdateModal')[0]) {
             $('#faqUpdateModal').hide();
-        } else if (event.target === $('#couponEditModal')[0]) {
-            $('#couponEditModal').hide();
         } else if (event.target === $('#couponUpdateModal')[0]) {
             $('#couponUpdateModal').hide();
-        } else if (event.target === $('#productEditModal')[0]) {
-            $('#productTitle').val('');
-            $('#productPrice').val('');
-            $('#productCode').val('');
-            $('#productContry').val('');
-            $('#productManufactureDate').val('');
-            $('#productMaterial').val('');
-            $('#productFeatures').val('');
-            $('.colorContainer').empty();
-            $('#productCategorySelect1').empty();
-            $('#productCategorySelect2').empty();
-            $('#productCategorySelect3').empty();
-            $('#thumbnailInput').val('');
-            $('#thumbnailPreview').empty();
-            $('#productEditModal').hide();
-        } else if(event.target === $('#productUpdateModal')[0]) {
-            $('.colorContainer').empty();
-            $('#productCategorySelect1').empty();
-            $('#productCategorySelect2').empty();
-            $('#productCategorySelect3').empty();
-            $('#updateThumbnailInput').val('');
-            $('#updateThumbnailPreview').empty();
-            newThumbnails = [];
-            isInitialLoad = true;
-            $('#productUpdateModal').hide();
-            productList();
         }
+        // else if(event.target === $('#productUpdateModal')[0]) {
+        //     $('.colorContainer').empty();
+        //     $('#productCategorySelect1').empty();
+        //     $('#productCategorySelect2').empty();
+        //     $('#productCategorySelect3').empty();
+        //     $('#updateThumbnailInput').val('');
+        //     $('#updateThumbnailPreview').empty();
+        //     newThumbnails = [];
+        //     isInitialLoad = true;
+        //     $('#productUpdateModal').hide();
+        //     productList();
+        // }
     });
+ // 취소 버튼(#cancelEditProductBtn) 또는 X 버튼(.close)을 클릭할 때만 닫히도록 설정
+    $('#cancelEditProductBtn, .close').click(function() {
+        // 1. 입력 필드 초기화 (기존 else if 안에 있던 내용들)
+        $('#productTitle, #productPrice, #productCode, #productContry, #productManufactureDate, #productMaterial, #productFeatures, #thumbnailInput').val('');
+        $('.colorContainer, #productCategorySelect1, #productCategorySelect2, #productCategorySelect3, #thumbnailPreview').empty();
 
+        // 2. 모달 닫기
+        $('#productEditModal').hide();
+    });
     // faq 시작
     // 초기 faq 목록 로드
     $('#faqList').click(function (event) {
@@ -1513,8 +1505,6 @@ $(document).ready(function () {
         });
     });
 
-
-
     // 상품 목록 로드
     function productList(){
         $.ajax({
@@ -1522,35 +1512,57 @@ $(document).ready(function () {
             type: 'GET',
             dataType: 'json',
             success: function(response){
-                const productTable = $('#productTable tbody');
-                productTable.empty();
-                $.each(response, function(index, product){
-                    const row = $('<tr>');
-                    row.append(`<td>${product.price}</td>`);
-                    if(product.id) {
+                const productDiv = $('#productDivList');
+                productDiv.addClass('product-grid'); // 클래스 추가 확인!
+                productDiv.empty();
 
-                        row.append(`<td>
-                                        <img src="${product.thumbnailUrl[0].thumbnailUrl}" alt="Thumbnail" class="product-thumbnail"
-                                             data-content='${product.content}' data-id="${product.id}" data-price="${product.price}"
-                                             data-code="${product.code}" data-contry="${product.contry}" data-features="${product.features}"
-                                             data-material="${product.material}" data-title="${product.title}" data-categoryId="${product.category.id}" data-thumbnails='${JSON.stringify(product.thumbnailUrl)}'
-                                             data-manufacture="${product.manufactureDate}" data-categoryTitle="${product.category.title}" data-categoryRef="${product.category.ref}"">
-                                    </td>`);
-                    } else {
-                        row.append(`<td>No Image</td>`);
+                $.each(response, function(index, product){
+
+                    let thumbnail = "no-image.png";
+                    if(product.thumbnailUrl && product.thumbnailUrl.length > 0){
+                        thumbnail = product.thumbnailUrl[0].thumbnailUrl;
                     }
-                    productTable.append(row);
+
+                    const card = $(`
+                    <div class="product-card">
+                        <img src="${thumbnail}" 
+                             class="product-thumbnail"
+                             data-content='${product.content}'
+                             data-id="${product.id}"
+                             data-price="${product.price}"
+                             data-code="${product.code}"
+                             data-contry="${product.contry}"
+                             data-features="${product.features}"
+                             data-material="${product.material}"
+                             data-title="${product.title}"
+                             data-categoryId="${product.category.id}"
+                             data-thumbnails='${JSON.stringify(product.thumbnailUrl)}'
+                             data-manufacture="${product.manufactureDate}"
+                             data-categoryTitle="${product.category.title}"
+                             data-categoryRef="${product.category.ref}"
+                        >
+
+                        <div class="product-info">
+                            <h4>${product.title}</h4>
+                            <p>${product.contry}</p>
+                            <p><b>${product.price}원</b></p>
+                        </div>
+                    </div>
+                `);
+
+                    productDiv.append(card);
                 });
+
                 $('.product-thumbnail').click(productUpdate);
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching product list:', error);
-                // Handle error scenario
             }
         });
     }
 
-        document.getElementById('updateThumbnailInput').addEventListener('change', function (event) {
+
+    document.getElementById('updateThumbnailInput').addEventListener('change', function (event) {
             const files = event.target.files;
             const previewContainer = document.getElementById('updateThumbnailPreview');
             previewContainer.innerHTML = ''; // 기존 미리보기 초기화

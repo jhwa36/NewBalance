@@ -57,22 +57,21 @@
         po.size AS size,
         po.quantity AS quantity
 
-        FROM product p
-        LEFT JOIN product_opt po ON p.product_id = po.product_id
-
+        FROM (
+            /*1.페이징이 적용된 상품 ID를 먼저 뽑습니다.*/
+        select distinct p.product_id
+        from product p
+        left join product_opt po on p.product_id = po.product_id
         <where>
-
             <if test="categoryId != null">
                 p.category_id = #{categoryId}
             </if>
-
             <if test="sizes != null and sizes.size() > 0">
                 AND po.size IN
                 <foreach collection="sizes" item="size" open="(" separator="," close=")">
                     #{size}
                 </foreach>
             </if>
-
             <if test="colors != null and colors.size() > 0">
                 AND po.color IN
                 <foreach collection="colors" item="color" open="(" separator="," close=")">
@@ -85,9 +84,13 @@
             </if>
 
         </where>
-
         ORDER BY p.product_id
         LIMIT #{limit} OFFSET #{offset}
+        )as p_limit
+        /*2.위에서 뽑힌 정확한 개수의 상품들에 대해서만 상세 데이터를 join합니다*/
+        join product p on p_limit.product_id = p.product_id
+        left join product_opt po on p.product_id = po.product_id
+        order by p.product_id
     </select>
 
 

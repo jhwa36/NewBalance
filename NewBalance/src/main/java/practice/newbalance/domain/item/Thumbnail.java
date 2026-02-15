@@ -25,10 +25,23 @@ public class Thumbnail {
     @JsonBackReference
     private Product product;
 
+//    @Column(name = "thumbnail_order")
+//    private int thumbnailOrder;
+//    public void setThumbnailOrder(int thumbnailOrder) {
+//        this.thumbnailOrder = thumbnailOrder;
+//    }
+
     public Thumbnail(String thumbnailUrl, Product product) {
         this.thumbnailUrl = thumbnailUrl;
         this.product = product;
     }
+
+//    public Thumbnail(String thumbnailUrl, Product product, int thumbnailOrder) {
+//        this.thumbnailUrl = thumbnailUrl;
+//        this.product = product;
+//        this.thumbnailOrder = thumbnailOrder;
+//    }
+
 
     public void updateUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
